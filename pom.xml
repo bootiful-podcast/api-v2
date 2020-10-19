@@ -10,14 +10,13 @@
         <relativePath/>
     </parent>
     <groupId>fm.bootifulpodcast</groupId>
-    <artifactId>api</artifactId>
+    <artifactId>api-v2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
-
         <lucene.version>8.6.2</lucene.version>
         <jsoup.version>1.13.1</jsoup.version>
-
-        <artifactory-maven-plugin.version>2.4.0
+        <artifactory-maven-plugin.version>
+            2.4.0
         </artifactory-maven-plugin.version>
         <aws-java-sdk.version>1.11.567</aws-java-sdk.version>
         <java.version>11</java.version>

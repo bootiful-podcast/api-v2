@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Log4j2
 @RestController
@@ -127,12 +124,15 @@ class PipelineController {
 			throws Exception {
 		var newFile = new File(this.file, uid);
 		file.transferTo(newFile);
+
 		CopyUtils.assertFileExists(newFile);
 		log.info("the newly POST'd file lives at " + newFile.getAbsolutePath() + '.');
 		Assert.isTrue(this.service.launchProcessorPipeline(uid, newFile), "the pipeline says no.");
 		var location = URI.create("/podcasts/" + uid + "/status");
 		log.info("sending status location as : '" + location + "'");
-		return ResponseEntity.accepted().location(location).build();
+		return ResponseEntity.accepted().location(location)
+				.body(Collections.singletonMap("status-url", location.toString()))
+		/* .build() */;// 202
 	}
 
 }

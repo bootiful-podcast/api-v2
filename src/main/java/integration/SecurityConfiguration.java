@@ -42,8 +42,8 @@ class CorsConfig {
 							.mvcMatchers("/test-upload/**").authenticated() //
 							.mvcMatchers("/podcasts/search").authenticated() //
 							.mvcMatchers("/podcasts/index").authenticated() //
-							.mvcMatchers("/podcasts").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
+							.mvcMatchers("/podcasts").authenticated() //
 							.anyRequest().permitAll() //
 					) //
 					.cors(Customizer.withDefaults())//

@@ -61,7 +61,9 @@ public class PipelineProperties {
 	@Data
 	public static class S3 {
 
-		private String inputBucketName, outputBucketName;
+		private String inputBucketName = "podcast-input-bucket-development";
+
+		private String outputBucketName = "podcast-output-bucket-development";
 
 		private File stagingDirectory;
 
