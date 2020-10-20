@@ -31,9 +31,11 @@ class PipelineController {
 
 	private final String processingMessage = "processing";
 
-	private final String audioProductionFinishedMessage = "audio has production has completed";
+	private final String audioUploadFinishedMessage = "audio-upload-complete";
 
-	private final String podbeanUploadFinishedMessage = "podcast has been published to Podbean";
+	private final String audioProductionFinishedMessage = "audio-complete";
+
+	private final String podbeanUploadFinishedMessage = "podbean-complete";
 
 	private final MediaType photoContentType = MediaType.IMAGE_JPEG;
 
@@ -71,21 +73,25 @@ class PipelineController {
 			var statusMap = new HashMap<String, String>();
 			statusMap.put("status", this.processingMessage);
 
+			log.info(podcast.toString());
+
 			if (null != podcast.getS3AudioUri()) {
 				var audioUriForPodcast = service.buildMediaUriForPodcastById(podcast.getId()).toString();
-				statusMap.putAll(Map.of("media-url", audioUriForPodcast, // deprecated but
-																			// leaving it
-																			// in for
-																			// legacy
-						"audio-url", audioUriForPodcast, //
-						"status", this.audioProductionFinishedMessage) //
-				);
+				var up = Map.of("media-url", audioUriForPodcast, "audio-url", audioUriForPodcast, "status",
+						this.audioProductionFinishedMessage);
+				for (var e : up.entrySet()) {
+					statusMap.put(e.getKey(), e.getValue());
+				}
+				log.info("updating status map for s3audiourl");
+
 			}
 
 			if (null != podcast.getPodbeanPhotoUri()) {
-				statusMap.putAll(Map.of("photo-url", podcast.getS3PhotoUri(), //
-						"status", this.podbeanUploadFinishedMessage) //
-				);
+				var up = Map.of("photo-url", podcast.getS3PhotoUri(), "status", this.podbeanUploadFinishedMessage);
+				for (var e : up.entrySet()) {
+					statusMap.put(e.getKey(), e.getValue());
+				}
+				log.info("updating status map for podbeanPhotoUri");
 			}
 
 			log.info("returning status: " + statusMap.toString() + " for " + uid);
