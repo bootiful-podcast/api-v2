@@ -31,7 +31,8 @@ class PipelineController {
 
 	private final String processingMessage = "processing";
 
-	private final String finishedMessage = "finished processing";
+	private final String audioProductionFinishedMessage = "audio has production has completed";
+	private final String podbeanUploadFinishedMessage = "podcast has been published to Podbean";
 
 	private final MediaType photoContentType = MediaType.IMAGE_JPEG;
 
@@ -40,7 +41,7 @@ class PipelineController {
 	private final PodcastViewService podcastViewService;
 
 	PipelineController(PipelineProperties props, PodcastViewService podcastViewService, PodcastRepository repository,
-			PipelineService service) {
+																				PipelineService service) {
 		this.file = CopyUtils.ensureDirectoryExists(props.getS3().getStagingDirectory());
 		this.service = service;
 		this.podcastViewService = podcastViewService;
@@ -60,16 +61,30 @@ class PipelineController {
 	ResponseEntity<?> getStatusForPodcast(@PathVariable String uid) {
 		var byUid = podcastRepository.findByUid(uid);
 		var response = byUid.map(podcast -> {
-			Map<String, String> statusMap;
+
+			// three levels of 'done'
+			// 1. s3audiouri == null: not done keep polling
+			// 2. s3audiouri != null: audio is done, but no images; keep polling
+			// 3. s3audiouri and podbeanPhotoUri != null: it's 100% done, they can go now if they want...
+			var statusMap = new HashMap<String, String>();
+			statusMap.put("status", this.processingMessage);
+
 			if (null != podcast.getS3AudioUri()) {
-				statusMap = Map.of( //
-						"media-url", service.buildMediaUriForPodcastById(podcast.getId()).toString(), //
-						"status", this.finishedMessage //
+				var audioUriForPodcast = service.buildMediaUriForPodcastById(podcast.getId()).toString();
+				statusMap.putAll(Map.of(
+					"media-url", audioUriForPodcast, // deprecated but leaving it in for legacy
+					"audio-url", audioUriForPodcast, //
+					"status", this.audioProductionFinishedMessage) //
 				);
 			}
-			else {
-				statusMap = Map.of("status", this.processingMessage);
+
+			if (null != podcast.getPodbeanPhotoUri()) {
+				statusMap.putAll(Map.of(
+					"photo-url", podcast.getS3PhotoUri(), //
+					"status", this.podbeanUploadFinishedMessage) //
+				);
 			}
+
 			log.info("returning status: " + statusMap.toString() + " for " + uid);
 			return statusMap;
 		});
@@ -80,17 +95,17 @@ class PipelineController {
 		var localhost = "localhost:9090";
 		var bootifulPodcastFmHost = "bootifulpodcast.fm";
 		var list = new ArrayList<>(
-				requestEntity.getHeaders().getOrDefault(HttpHeaders.REFERER.toLowerCase(), new ArrayList<>()));
+			requestEntity.getHeaders().getOrDefault(HttpHeaders.REFERER.toLowerCase(), new ArrayList<>()));
 		list.add(requestEntity.getHeaders().getOrigin());
 		return list//
-				.stream()//
-				.filter(Objects::nonNull)//
-				.map(String::toLowerCase)//
-				.filter(host -> host.contains(localhost) || host.contains(bootifulPodcastFmHost))//
-				.map(host -> (host.contains(localhost)) ? "http://" + localhost
-						: this.accessControlAllowOriginHeaderValue)//
-				.findFirst()//
-				.orElse(this.accessControlAllowOriginHeaderValue);
+			.stream()//
+			.filter(Objects::nonNull)//
+			.map(String::toLowerCase)//
+			.filter(host -> host.contains(localhost) || host.contains(bootifulPodcastFmHost))//
+			.map(host -> (host.contains(localhost)) ? "http://" + localhost
+				: this.accessControlAllowOriginHeaderValue)//
+			.findFirst()//
+			.orElse(this.accessControlAllowOriginHeaderValue);
 	}
 
 	@SneakyThrows
@@ -98,30 +113,30 @@ class PipelineController {
 	ResponseEntity<Resource> getProfilePhotoMedia(RequestEntity<?> requestEntity, @PathVariable String uid) {
 		var podcastPhotoMedia = service.getPodcastPhotoMedia(uid);
 		return ResponseEntity.ok()//
-				.header("X-Podcast-UID", uid)//
-				.header(HttpHeaders.ACCEPT_RANGES, "none")//
-				.contentType(this.photoContentType)//
-				.contentLength(podcastPhotoMedia.contentLength())
-				.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, buildAccessControlAllowOriginHeader(requestEntity))
-				.body(podcastPhotoMedia);
+			.header("X-Podcast-UID", uid)//
+			.header(HttpHeaders.ACCEPT_RANGES, "none")//
+			.contentType(this.photoContentType)//
+			.contentLength(podcastPhotoMedia.contentLength())
+			.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, buildAccessControlAllowOriginHeader(requestEntity))
+			.body(podcastPhotoMedia);
 	}
 
 	@SneakyThrows
-	@GetMapping({ "/podcasts/{uid}/produced-audio", "/podcasts/{uid}/produced-audio.mp3" })
+	@GetMapping({"/podcasts/{uid}/produced-audio", "/podcasts/{uid}/produced-audio.mp3"})
 	ResponseEntity<Resource> getProducedAudioMedia(RequestEntity<?> requestEntity, @PathVariable String uid) {
 		var podcastAudioMedia = service.getPodcastAudioMedia(uid);
 		return ResponseEntity.ok()//
-				.header("X-Podcast-UID", uid)//
-				.contentType(this.audioContentType)//
-				.contentLength(podcastAudioMedia.contentLength())//
-				.header(HttpHeaders.ACCEPT_RANGES, "none")//
-				.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, buildAccessControlAllowOriginHeader(requestEntity))
-				.body(podcastAudioMedia);
+			.header("X-Podcast-UID", uid)//
+			.contentType(this.audioContentType)//
+			.contentLength(podcastAudioMedia.contentLength())//
+			.header(HttpHeaders.ACCEPT_RANGES, "none")//
+			.header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, buildAccessControlAllowOriginHeader(requestEntity))
+			.body(podcastAudioMedia);
 	}
 
 	@PostMapping("/podcasts/{uid}")
 	ResponseEntity<?> beginProduction(@PathVariable("uid") String uid, @RequestParam("file") MultipartFile file)
-			throws Exception {
+		throws Exception {
 		var newFile = new File(this.file, uid);
 		file.transferTo(newFile);
 
@@ -131,8 +146,8 @@ class PipelineController {
 		var location = URI.create("/podcasts/" + uid + "/status");
 		log.info("sending status location as : '" + location + "'");
 		return ResponseEntity.accepted().location(location)
-				.body(Collections.singletonMap("status-url", location.toString()))
-		/* .build() */;// 202
+			.body(Collections.singletonMap("status-url", location.toString()))
+			/* .build() */;// 202
 	}
 
 }
