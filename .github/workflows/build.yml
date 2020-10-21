@@ -1,38 +1,18 @@
-# Build the Podbean Client
-
-name: API
+name: Bootiful Podcast API Deploy
 
 
 env:
-  ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
-  ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME  }}
-  ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD  }}
-  SPRING_PROFILES_ACTIVE: ci
-  CF_API: ${{ secrets.CF_API  }}
-  CF_API_ENDPOINT: ${{ secrets.CF_API_ENDPOINT  }}
-  CF_ORG: ${{ secrets.CF_ORG  }}
-  CF_PASSWORD: ${{ secrets.CF_PASSWORD  }}
-  CF_SPACE: ${{ secrets.CF_SPACE  }}
-  CF_USER: ${{ secrets.CF_USER  }}
-  PODCAST_RMQ_ADDRESS: ${{ secrets.PODCAST_RMQ_ADDRESS  }}
-  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID  }}
-  PODBEAN_CLIENT_ID_development: ${{ secrets.PODBEAN_CLIENT_ID_development  }}
-  PODBEAN_CLIENT_ID_production: ${{ secrets.PODBEAN_CLIENT_ID_production  }}
-  PODBEAN_CLIENT_SECRET_development: ${{ secrets.PODBEAN_CLIENT_SECRET_development  }}
-  PODBEAN_CLIENT_SECRET_production: ${{ secrets.PODBEAN_CLIENT_SECRET_production  }}
-  PODCAST_RMQ_ADDRESS_development: ${{ secrets.PODCAST_RMQ_ADDRESS_development  }}
-  PODCAST_RMQ_ADDRESS_production: ${{ secrets.PODCAST_RMQ_ADDRESS_production  }}
-  AWS_REGION_development: ${{ secrets.AWS_REGION_development  }}
-  AWS_REGION_production: ${{ secrets.AWS_REGION_production  }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
 
 on:
-  create:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,27 +20,34 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: Set up JDK 14
-        uses: actions/setup-java@v1
+      - uses: actions/setup-node@master
         with:
-          java-version: 14
+          node-version: '10.x'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v1
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2
-          restore-keys: ${{ runner.os }}-m2
-      - name: Deploy
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      - run: |-
+          gcloud --quiet auth configure-docker
+
+      - run: |-
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      - name: Setup gcloud environment
+        uses: GoogleCloudPlatform/github-actions@0.1.2
+
+      - name: Deploy to the cluster
         run: |
-
-          export BP_MODE="development"
-          if [ "$GITHUB_EVENT_NAME" = "create" ]; then 
-              if [[  "${GITHUB_REF}" =~ "tags" ]]; then 
-                  BP_MODE="production"
-              fi 
-          fi
-          echo "BP_MODE=${BP_MODE}" 
           cd $GITHUB_WORKSPACE
-          ./deploy/cf.sh
-          ./deploy/deploy.sh
+          export BP_MODE="development"
+          if [ "$GITHUB_EVENT_NAME" = "create" ]; then
+            if [[  "${GITHUB_REF}" =~ "tags" ]]; then
+              BP_MODE="production"
+            fi
+          fi
+          echo "BP_MODE=${BP_MODE}"
+          cd $GITHUB_WORKSPACE
+          ./deploy/deploy-gke/deploy.sh
