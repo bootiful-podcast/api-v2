@@ -27,6 +27,7 @@ public class PipelineService {
 
 	private final PodcastRepository repository;
 
+	// todo figure out how to replace this with something more K8s-native!
 	private final ServerUriResolver resolver;
 
 	PipelineService(MessageChannel fullPipelineMessageChannel, MessageChannel fastTrackMessageChannel, AwsS3Service s3,

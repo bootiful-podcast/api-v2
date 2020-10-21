@@ -1,6 +1,8 @@
 package integration.self;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,10 +16,13 @@ class ServerUriResolverConfiguration {
 		return new LocalhostServerUriResolver();
 	}
 
+	// todo make this better! this should actually talk to the API, get the current
+	// endpoint, etc
 	@Bean
 	@Profile("cloud")
-	CloudFoundryServerUriResolver cloudFoundryServerUriResolver(ObjectMapper om) {
-		return new CloudFoundryServerUriResolver(om, System.getenv("VCAP_APPLICATION"));
+	// @ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
+	LocalhostServerUriResolver kubernetesServerUriResolver(ObjectMapper om) {
+		return new LocalhostServerUriResolver();
 	}
 
 }
