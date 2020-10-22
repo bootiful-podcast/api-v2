@@ -1,5 +1,7 @@
 package integration;
 
+//import fm.bootifulpodcast.rabbitmq.RabbitMqHelper;
+
 import fm.bootifulpodcast.rabbitmq.RabbitMqHelper;
 import integration.aws.AwsS3Service;
 import integration.events.PodcastArchiveUploadedEvent;
@@ -12,6 +14,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.integration.amqp.dsl.Amqp;
 import org.springframework.integration.dsl.AggregatorSpec;
@@ -36,6 +39,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static integration.Headers.*;
+
+// todo this is copied from https://github.com/bootiful-podcast/rabbitmq-utilities/blob/master/src/main/java/fm/bootifulpodcast/rabbitmq/RabbitMqHelper.java
+// todo i want to see if my autoconfig was contributing to the difficulties im having connecting or not
 
 /**
  * This is step 1 in the flow.

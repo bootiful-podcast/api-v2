@@ -7,6 +7,9 @@ PROJECT_ID=pgtm-jlong
 ROOT_DIR=$(cd `dirname $0`/../.. && pwd )
 echo 'the root dir is' $ROOT_DIR
 ## TODO figure out how to get the test suite running in prod again
+image_id=$(docker images -q api)
+docker rmi -f $image_id || echo "there is not an existing image to delete..."
+
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
 # todo restore these next 2 lines
