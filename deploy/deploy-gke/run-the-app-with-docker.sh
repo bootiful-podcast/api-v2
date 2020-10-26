@@ -21,15 +21,11 @@ echo $PSQL_USER
 
 PSQL_PW=$(read_kubernetes_secret bp-postgresql-secrets POSTGRES_PASSWORD)
 echo $PSQL_PW
-#spring.rabbitmq.host=localhost
 
 LOCALHOST=host.docker.internal
-RMQ_USER=guest
-RMQ_PW=guest
+
 echo $RMQ_PW
 echo $RMQ_USER
-## -e SPRING_RABBITMQ_VIRTUAL_HOST="/" \
-#  -v  /Users/jlong/code/bootiful-podcast/deployment/bp_rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
 
 docker run \
   -e SPRING_RABBITMQ_USERNAME="${RMQ_USER}" \
@@ -43,6 +39,8 @@ docker run \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
   -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
   -e AWS_REGION=$AWS_REGION \
+  -e PODBEAN_CLIENT_SECRET=$PODBEAN_CLIENT_SECRET \
+  -e PODBEAN_CLIENT_ID=$PODBEAN_CLIENT_ID \
   -p 8080:8080 \
   $CONTAINER_NAME
 
