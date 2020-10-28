@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: bp-api
+  name: api
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: bp-api
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bp-api
+  name: bp-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bp-api
+  template:
+    metadata:
+      labels:
+        app: bp-api
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: bp-api-secrets
+          image: gcr.io/pgtm-jlong/bp-api:latest
+          imagePullPolicy: Always
+          name: bp-api
