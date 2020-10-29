@@ -5,8 +5,8 @@ function read_kubernetes_secret() {
 }
 
 echo "Deploying Bootiful Podcast API Service to GKE..."
-APP_NAME=bp-api
-PROJECT_ID=pgtm-jlong
+APP_NAME=api
+PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd `dirname $0`/../.. && pwd )
 echo 'the root dir is' $ROOT_DIR
 ## TODO figure out how to get the test suite running in prod again
