@@ -35,6 +35,6 @@ spec:
         - envFrom:
             - secretRef:
                 name:  api-secrets
-          image: gcr.io/pgtm-jlong/api:latest
+          image: gcr.io/pgtm-jlong/api
           imagePullPolicy: Always
           name: api
