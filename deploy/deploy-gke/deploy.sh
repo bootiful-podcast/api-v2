@@ -4,28 +4,25 @@ function read_kubernetes_secret() {
   kubectl get secret $1 -o jsonpath="{.data.$2}" | base64 --decode
 }
 
-echo "Deploying Bootiful Podcast API Service to GKE..."
 APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd `dirname $0`/../.. && pwd )
-echo 'the root dir is' $ROOT_DIR
+
 ## TODO figure out how to get the test suite running in prod again
 image_id=$(docker images -q api)
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
-# todo restore these next 2 lines
+
 docker tag "${image_id}" gcr.io/${PROJECT_ID}/${APP_NAME}
 docker push gcr.io/${PROJECT_ID}/${APP_NAME}
-#$ROOT_DIR/deploy/deploy-gke/run-the-app-with-docker.sh $image_id
 
 RMQ_USER=$(read_kubernetes_secret bp-rabbitmq-secrets RABBITMQ_DEFAULT_USER)
 RMQ_PW=$(read_kubernetes_secret bp-rabbitmq-secrets RABBITMQ_DEFAULT_PASS)
 
 PSQL_USER=$(read_kubernetes_secret bp-postgresql-secrets POSTGRES_USER)
 PSQL_PW=$(read_kubernetes_secret bp-postgresql-secrets POSTGRES_PASSWORD)
-
 
 kubectl apply -f <(echo "
 ---
