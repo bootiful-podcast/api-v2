@@ -17,7 +17,12 @@ spec:
       containers:
         - envFrom:
             - secretRef:
-                name:  api-secrets
+                name: api-secrets
           image: gcr.io/pgtm-jlong/api
           imagePullPolicy: Always
           name: api
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              memory: "2Gi"
