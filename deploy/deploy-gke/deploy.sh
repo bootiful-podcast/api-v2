@@ -12,7 +12,10 @@ PSQL_PW=$(read_kubernetes_secret postgresql-secrets POSTGRES_PASSWORD)
 
 APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
-ROOT_DIR=$(cd `dirname $0`/../.. && pwd )
+ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
+
+API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
+kubectl apply -f $API_YAML
 
 ## TODO figure out how to get the test suite running in prod again
 image_id=$(docker images -q api)
@@ -20,7 +23,6 @@ docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
-
 
 docker tag "${image_id}" gcr.io/${PROJECT_ID}/${APP_NAME}
 docker push gcr.io/${PROJECT_ID}/${APP_NAME}
@@ -48,4 +50,4 @@ stringData:
   PODBEAN_CLIENT_ID: "${PODBEAN_CLIENT_ID}"
 ")
 
-kubectl apply -f ${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
+kubectl apply -f $API_YAML
