@@ -3,6 +3,9 @@
 BP_MODE=${1:-DEVELOPMENT}
 echo BP_MODE=${BP_MODE}
 
+if [ "$BP_MODE" = "DEVELOPMENT" ]; then
+ echo "were using the development variables, not the production ones."
+fi
 
 PODBEAN_CLIENT_SECRET=PODBEAN_CLIENT_SECRET_${BP_MODE}
 PODBEAN_CLIENT_SECRET=${!PODBEAN_CLIENT_SECRET}
@@ -10,12 +13,6 @@ PODBEAN_CLIENT_SECRET=${!PODBEAN_CLIENT_SECRET}
 PODBEAN_CLIENT_ID=PODBEAN_CLIENT_ID_${BP_MODE}
 PODBEAN_CLIENT_ID=${!PODBEAN_CLIENT_ID}
 
-echo $PODBEAN_CLIENT_ID
-echo $PODBEAN_CLIENT_SECRET
-
-if [ "$BP_MODE" = "DEVELOPMENT" ]; then
- echo "were using the development variables, not the production ones."
-fi
 
 function read_kubernetes_secret() {
   kubectl get secret $1 -o jsonpath="{.data.$2}" | base64 --decode
@@ -31,6 +28,7 @@ APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
 API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
+API_SERVICE_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api-service.yaml
 SECRETS=${APP_NAME}-secrets
 
 ## TODO figure out how to get the test suite running in prod again
@@ -68,3 +66,5 @@ stringData:
 ")
 
 kubectl apply -f $API_YAML
+
+kubectl get service | grep $APP_NAME || kubectl apply -f $API_SERVICE_YAML
