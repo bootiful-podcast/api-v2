@@ -13,7 +13,6 @@ PSQL_PW=$(read_kubernetes_secret postgresql-secrets POSTGRES_PASSWORD)
 APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
-
 API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
 kubectl apply -f $API_YAML
 
