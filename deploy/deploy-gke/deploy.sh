@@ -15,6 +15,7 @@ PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
 API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
 kubectl apply -f $API_YAML
+kubectl delete secrets api-secrets
 
 ## TODO figure out how to get the test suite running in prod again
 image_id=$(docker images -q api)
