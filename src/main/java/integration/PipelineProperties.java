@@ -26,7 +26,7 @@ public class PipelineProperties {
 	@Data
 	public static class SiteGenerator {
 
-		private String requestsQueue = "site-generator-requests-queue";
+		private String requestsQueue = "site-generator-requests";
 
 		private String requestsExchange = this.requestsQueue;
 
@@ -37,7 +37,7 @@ public class PipelineProperties {
 	@Data
 	public static class Podbean {
 
-		private String requestsQueue = "podbean-requests-queue";
+		private String requestsQueue = "podbean-requests";
 
 		private String requestsExchange = this.requestsQueue;
 
@@ -77,14 +77,14 @@ public class PipelineProperties {
 		private String inputBucketName = "podcast-input-bucket";
 
 		// todo this needs to be changed here AND in the Python Processor code
-		private String requestsQueue = "podcast-requests";
+		private String requestsQueue = "podcast-processor-requests";
 
 		private String requestsExchange = this.requestsQueue;
 
 		private String requestsRoutingKey = this.requestsQueue;
 
 		// todo this needs to be changed here AND in the Python Processor code
-		private String repliesQueue = "podcast-replies";
+		private String repliesQueue = "podcast-processor-replies";
 
 		private String repliesExchange = this.repliesQueue;
 

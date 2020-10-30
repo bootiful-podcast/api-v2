@@ -42,15 +42,19 @@ public class ApiApplication {
 		helper.defineDestination(pipelineProperties.getSiteGenerator().getRequestsExchange(),
 				pipelineProperties.getSiteGenerator().getRequestsQueue(),
 				pipelineProperties.getSiteGenerator().getRequestsRoutingKey());
+
 		helper.defineDestination(pipelineProperties.getPodbean().getRequestsExchange(),
 				pipelineProperties.getPodbean().getRequestsQueue(),
 				pipelineProperties.getPodbean().getRequestsRoutingKey());
+
 		helper.defineDestination(pipelineProperties.getProcessor().getRequestsExchange(),
 				pipelineProperties.getProcessor().getRequestsQueue(),
 				pipelineProperties.getProcessor().getRequestsRoutingKey());
+
 		helper.defineDestination(pipelineProperties.getProcessor().getRepliesExchange(),
 				pipelineProperties.getProcessor().getRepliesQueue(),
 				pipelineProperties.getProcessor().getRepliesRoutingKey());
+
 		log.info("initializing PipelineService: 2. Build PipelineService");
 		return new PipelineService(left.unproducedPipelineMessageChannel(), right.preproducedPipelineMessageChannel(),
 				s3, repository, resolver);
