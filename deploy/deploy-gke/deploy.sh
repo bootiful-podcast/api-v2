@@ -14,8 +14,10 @@ APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
 API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
-kubectl apply -f $API_YAML
-kubectl delete secrets api-secrets
+SECRETS=${APP_NAME}-secrets
+
+
+
 
 ## TODO figure out how to get the test suite running in prod again
 image_id=$(docker images -q api)
@@ -27,12 +29,16 @@ image_id=$(docker images -q api)
 docker tag "${image_id}" gcr.io/${PROJECT_ID}/${APP_NAME}
 docker push gcr.io/${PROJECT_ID}/${APP_NAME}
 
+kubectl delete secrets ${SECRETS}
+kubectl delete -f $API_YAML
+
+
 kubectl apply -f <(echo "
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ${APP_NAME}-secrets
+  name: ${SECRETS}
 type: Opaque
 stringData:
   SPRING_RABBITMQ_USERNAME: ${BP_RABBITMQ_MANAGEMENT_USERNAME}
