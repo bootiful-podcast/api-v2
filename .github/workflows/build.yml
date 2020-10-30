@@ -6,6 +6,11 @@ env:
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
   GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+  BP_RABBITMQ_MANAGEMENT_PASSWORD: ${{ secrets.BP_RABBITMQ_MANAGEMENT_PASSWORD }}
+  BP_RABBITMQ_MANAGEMENT_USERNAME: ${{ secrets.BP_RABBITMQ_MANAGEMENT_USERNAME }}
+  BP_POSTGRES_USERNAME: ${{ secrets.BP_POSTGRES_USERNAME }}
+  BP_POSTGRES_PASSWORD: ${{ secrets.BP_POSTGRES_PASSWORD }}
+
 
 on:
   push:
@@ -50,4 +55,4 @@ jobs:
           fi
           echo "BP_MODE=${BP_MODE}"
           cd $GITHUB_WORKSPACE
-          ./deploy/deploy-gke/deploy.sh
+          ./deploy/deploy-gke/deploy.sh $BP_MODE
