@@ -2,7 +2,6 @@ package integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.sendgrid.helpers.mail.objects.Email;
-import fm.bootifulpodcast.rabbitmq.RabbitMqHelper;
 import integration.database.Podcast;
 import integration.database.PodcastRepository;
 import integration.email.NotificationService;
@@ -38,8 +37,6 @@ class Step2ProcessorReplyIntegrationConfiguration {
 
 	private final PipelineProperties properties;
 
-	private final RabbitMqHelper helper;
-
 	private final AmqpTemplate template;
 
 	private final PipelineService service;
@@ -57,10 +54,9 @@ class Step2ProcessorReplyIntegrationConfiguration {
 
 	@Bean
 	IntegrationFlow processorReplyPipeline() {
-
+		log.info("INT: " + getClass().getName());
 		var podbeanConfiguration = properties.getPodbean();
-		helper.defineDestination(podbeanConfiguration.getRequestsExchange(), podbeanConfiguration.getRequestsQueue(),
-				podbeanConfiguration.getRequestsRoutingKey());
+
 		return IntegrationFlows //
 				.from(Amqp //
 						.inboundAdapter(this.connectionFactory, this.properties.getProcessor().getRepliesQueue()) //

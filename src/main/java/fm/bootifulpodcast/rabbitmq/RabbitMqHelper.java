@@ -23,15 +23,20 @@ public class RabbitMqHelper {
 	}
 
 	public Exchange exchange(String requestExchange) {
-		return ExchangeBuilder.topicExchange(requestExchange).durable(true).build();
+		var e = ExchangeBuilder.topicExchange(requestExchange).durable(true).build();
+		return e;
 	}
 
 	public Queue queue(String requestsQueue) {
-		return QueueBuilder.durable(requestsQueue).build();
+		var q = QueueBuilder.durable(requestsQueue).build();
+		q.setShouldDeclare(true);
+		return q;
 	}
 
 	public Binding binding(Queue q, Exchange e, String routingKey) {
-		return BindingBuilder.bind(q).to(e).with(routingKey).noargs();
+		var b = BindingBuilder.bind(q).to(e).with(routingKey).noargs();
+		b.setShouldDeclare(true);
+		return b;
 	}
 
 }

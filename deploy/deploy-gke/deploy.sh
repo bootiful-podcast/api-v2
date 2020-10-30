@@ -4,6 +4,12 @@ function read_kubernetes_secret() {
   kubectl get secret $1 -o jsonpath="{.data.$2}" | base64 --decode
 }
 
+RMQ_USER=$(read_kubernetes_secret rabbitmq-secrets RABBITMQ_DEFAULT_USER)
+RMQ_PW=$(read_kubernetes_secret rabbitmq-secrets RABBITMQ_DEFAULT_PASS)
+
+PSQL_USER=$(read_kubernetes_secret postgresql-secrets POSTGRES_USER)
+PSQL_PW=$(read_kubernetes_secret postgresql-secrets POSTGRES_PASSWORD)
+
 APP_NAME=api
 PROJECT_ID=${GKE_PROJECT:-pgtm-jlong}
 ROOT_DIR=$(cd `dirname $0`/../.. && pwd )
@@ -17,12 +23,6 @@ image_id=$(docker images -q api)
 
 docker tag "${image_id}" gcr.io/${PROJECT_ID}/${APP_NAME}
 docker push gcr.io/${PROJECT_ID}/${APP_NAME}
-
-RMQ_USER=$(read_kubernetes_secret rabbitmq-secrets RABBITMQ_DEFAULT_USER)
-RMQ_PW=$(read_kubernetes_secret rabbitmq-secrets RABBITMQ_DEFAULT_PASS)
-
-PSQL_USER=$(read_kubernetes_secret postgresql-secrets POSTGRES_USER)
-PSQL_PW=$(read_kubernetes_secret postgresql-secrets POSTGRES_PASSWORD)
 
 kubectl apply -f <(echo "
 ---

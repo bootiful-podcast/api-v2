@@ -1,6 +1,5 @@
 package integration;
 
-import fm.bootifulpodcast.rabbitmq.RabbitMqHelper;
 import integration.aws.AwsS3Service;
 import integration.events.PodcastArchiveUploadedEvent;
 import integration.events.PodcastArtifactsUploadedToProcessorEvent;
@@ -65,6 +64,7 @@ class Step1UnproducedPipelineIntegrationConfiguration {
 
 	Step1UnproducedPipelineIntegrationConfiguration(AwsS3Service s3, JsonHelper jsonService,
 			PipelineProperties properties, ApplicationEventPublisher publisher) {
+		log.info("INT: " + getClass().getName());
 		this.properties = properties;
 		this.publisher = publisher;
 		var retryTemplate = new RetryTemplate();
@@ -225,7 +225,7 @@ class Step1UnproducedPipelineIntegrationConfiguration {
 	}
 
 	@Bean
-	IntegrationFlow uploadPreparationIntegrationFlow(AmqpTemplate template, RabbitMqHelper helper) {
+	IntegrationFlow uploadPreparationIntegrationFlow(AmqpTemplate template) {
 
 		var processorConfig = this.properties.getProcessor();
 
@@ -233,12 +233,6 @@ class Step1UnproducedPipelineIntegrationConfiguration {
 				.outboundAdapter(template)//
 				.exchangeName(processorConfig.getRequestsExchange()) //
 				.routingKey(processorConfig.getRequestsRoutingKey());
-
-		helper.defineDestination(processorConfig.getRequestsExchange(), processorConfig.getRequestsQueue(),
-				processorConfig.getRequestsRoutingKey());
-
-		helper.defineDestination(processorConfig.getRepliesExchange(), processorConfig.getRepliesQueue(),
-				processorConfig.getRepliesRoutingKey());
 
 		return IntegrationFlows//
 				.from(this.unproducedPipelineMessageChannel()) //
