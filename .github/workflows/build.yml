@@ -1,6 +1,5 @@
 name: Bootiful Podcast API Deploy
 
-
 env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
