@@ -16,23 +16,17 @@ ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
 API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
 SECRETS=${APP_NAME}-secrets
 
-
-
-
 ## TODO figure out how to get the test suite running in prod again
 image_id=$(docker images -q api)
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
-
 docker tag "${image_id}" gcr.io/${PROJECT_ID}/${APP_NAME}
 docker push gcr.io/${PROJECT_ID}/${APP_NAME}
 
-kubectl delete secrets ${SECRETS}
-kubectl delete -f $API_YAML
-
-
+kubectl delete secrets ${SECRETS} || echo "could not delete ${SECRETS}."
+kubectl delete -f $API_YAML || echo "could not delete the existing Kubernetes environment as described in ${API_YAML}."
 kubectl apply -f <(echo "
 ---
 apiVersion: v1
