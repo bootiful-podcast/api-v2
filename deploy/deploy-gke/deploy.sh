@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+BP_MODE=${1:-DEVELOPMENT}
+echo BP_MODE=${BP_MODE}
+
+
+PODBEAN_CLIENT_SECRET=PODBEAN_CLIENT_SECRET_${BP_MODE}
+PODBEAN_CLIENT_SECRET=${!PODBEAN_CLIENT_SECRET}
+
+PODBEAN_CLIENT_ID=PODBEAN_CLIENT_ID_${BP_MODE}
+PODBEAN_CLIENT_ID=${!PODBEAN_CLIENT_ID}
+
+echo $PODBEAN_CLIENT_ID
+echo $PODBEAN_CLIENT_SECRET
+
+if [ "$BP_MODE" = "DEVELOPMENT" ]; then
+ echo "were using the development variables, not the production ones."
+fi
+
 function read_kubernetes_secret() {
   kubectl get secret $1 -o jsonpath="{.data.$2}" | base64 --decode
 }
