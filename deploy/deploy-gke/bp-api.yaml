@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app:  api
-  name:  api
+    app: api
+  name: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app:  api
+      app: api
   template:
     metadata:
       labels:
-        app:  api
+        app: api
     spec:
       containers:
         - envFrom:
@@ -21,6 +21,16 @@ spec:
           image: gcr.io/pgtm-jlong/api
           imagePullPolicy: Always
           name: api
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/readiness
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/liveness
+          ports:
+            - containerPort: 8080
           resources:
             limits:
               memory: "2Gi"
