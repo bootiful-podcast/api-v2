@@ -23,7 +23,7 @@ class AwsConfiguration {
 	}
 
 	@Bean
-	AmazonS3 amazonS3(@Value("${AWS_ACCESS_KEY_ID}") String accessKey, @Value("${AWS_SECRET_ACCESS_KEY}") String secret,
+	AmazonS3 amazonS3(@Value("${AWS_ACCESS_KEY}") String accessKey, @Value("${AWS_ACCESS_KEY_SECRET}") String secret,
 			@Value("${AWS_REGION}") String region) {
 		log.info("connecting to " + region);
 		var credentials = new BasicAWSCredentials(accessKey, secret);
