@@ -40,6 +40,7 @@ class CorsConfig {
 		protected void configure(HttpSecurity http) throws Exception {
 			http //
 					.authorizeRequests(ae -> ae //
+							/* Secures the podcast endpoints */
 							.mvcMatchers("/podcasts/search").authenticated() //
 							.mvcMatchers("/podcasts/index").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
@@ -47,7 +48,9 @@ class CorsConfig {
 							/* Secures the Actuator endpoints */
 							.mvcMatchers("/actuator/health").permitAll() //
 							.mvcMatchers("/actuator/health/**").permitAll() //
-							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest().permitAll() //
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
+							/* Secures everything else */
+							.anyRequest().permitAll() //
 					) //
 					.cors(Customizer.withDefaults())//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
