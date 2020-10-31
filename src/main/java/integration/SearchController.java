@@ -52,7 +52,7 @@ class SearchController {
 
 	@PostMapping("/podcasts/index")
 	ResponseEntity<?> refreshIndex() {
-		refresh();
+		this.refresh();
 		return ResponseEntity.ok().build();
 	}
 

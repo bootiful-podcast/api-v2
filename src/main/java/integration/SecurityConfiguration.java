@@ -4,6 +4,7 @@ import integration.database.User;
 import integration.database.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,23 +34,29 @@ import java.util.stream.Collectors;
 class CorsConfig {
 
 	@Configuration
-	public static class MyConfig extends WebSecurityConfigurerAdapter {
+	public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http //
 					.authorizeRequests(ae -> ae //
-							.mvcMatchers("/test-upload/**").authenticated() //
 							.mvcMatchers("/podcasts/search").authenticated() //
 							.mvcMatchers("/podcasts/index").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
 							.mvcMatchers("/podcasts").authenticated() //
+							.mvcMatchers("/actuator/health").permitAll() //
+							.mvcMatchers("/actuator/health/**").permitAll() //
+
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()// this
+																								// secures
+																								// the
+																								// Actuator
+																								// endpoints
 							.anyRequest().permitAll() //
 					) //
 					.cors(Customizer.withDefaults())//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
 					.csrf(AbstractHttpConfigurer::disable);
-
 		}
 
 	}
@@ -71,7 +78,6 @@ class CorsConfig {
 		return request -> configuration;
 	}
 
-	///
 	@Bean
 	UserDetailsService jdbcUserDetailsService(UserRepository repository) {
 		return new JdbcUserDetailsService(repository);
@@ -81,14 +87,6 @@ class CorsConfig {
 	PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
-
-	/*
-	 * @Bean WebMvcConfigurer corsConfigurer() { return new WebMvcConfigurer() {
-	 *
-	 * @Override public void addCorsMappings(CorsRegistry registry) {
-	 * registry.addMapping("/**").allowedMethods("PUT", "OPTIONS", "GET", "POST",
-	 * "DELETE"); } }; }
-	 */
 
 }
 
