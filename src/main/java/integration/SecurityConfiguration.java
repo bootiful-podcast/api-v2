@@ -44,15 +44,10 @@ class CorsConfig {
 							.mvcMatchers("/podcasts/index").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
 							.mvcMatchers("/podcasts").authenticated() //
+							/* Secures the Actuator endpoints */
 							.mvcMatchers("/actuator/health").permitAll() //
 							.mvcMatchers("/actuator/health/**").permitAll() //
-
-							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()// this
-																								// secures
-																								// the
-																								// Actuator
-																								// endpoints
-							.anyRequest().permitAll() //
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest().permitAll() //
 					) //
 					.cors(Customizer.withDefaults())//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
