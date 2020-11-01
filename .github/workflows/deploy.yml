@@ -1,4 +1,4 @@
-name: Bootiful Podcast API Deploy
+name: build
 
 env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
