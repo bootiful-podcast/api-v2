@@ -44,6 +44,9 @@ class CorsConfig {
 							.mvcMatchers("/podcasts/search").authenticated() //
 							.mvcMatchers("/podcasts/index").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
+							// podcasts/" + uid + "/profile-photo
+							.mvcMatchers("/podcasts/*/profile-photo").permitAll() //
+							.mvcMatchers("/podcasts/*/produced-audio").permitAll() //
 							.mvcMatchers("/podcasts").authenticated() //
 							/* Secures the Actuator endpoints */
 							.mvcMatchers("/actuator/health").permitAll() //
