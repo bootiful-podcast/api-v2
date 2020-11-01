@@ -9,11 +9,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.EventListener;
 import org.springframework.web.client.RestTemplate;
 
 @Log4j2
@@ -24,17 +22,6 @@ public class ApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
-	}
-
-	private final PipelineProperties pipelineProperties;
-
-	@EventListener(ApplicationReadyEvent.class)
-	public void ready() {
-
-		System.getenv().forEach((k, v) -> log.info(k + "=" + v));
-
-		log.info(this.pipelineProperties.toString());
-
 	}
 
 	// todo remove this if rabbitmq-utilities is added back to the classpath

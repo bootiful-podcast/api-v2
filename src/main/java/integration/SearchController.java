@@ -5,6 +5,7 @@ import com.joshlong.lucene.LuceneTemplate;
 import integration.database.Podcast;
 import integration.database.PodcastRepository;
 import integration.events.PodcastPublishedToPodbeanEvent;
+import integration.events.SearchIndexInvalidatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -75,13 +76,9 @@ class SearchController {
 		return this.luceneTemplate.search(queryStr, maxResults, document -> document.get("uid"));
 	}
 
-	@EventListener(PodcastPublishedToPodbeanEvent.class)
+	@EventListener({ PodcastPublishedToPodbeanEvent.class, ApplicationReadyEvent.class,
+			SearchIndexInvalidatedEvent.class })
 	public void newPodcast() {
-		this.refresh();
-	}
-
-	@EventListener(ApplicationReadyEvent.class)
-	public void ready() {
 		this.refresh();
 	}
 

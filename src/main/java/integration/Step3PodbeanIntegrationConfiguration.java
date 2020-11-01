@@ -7,6 +7,7 @@ import integration.aws.AwsS3Service;
 import integration.database.Podcast;
 import integration.database.PodcastRepository;
 import integration.events.PodcastPublishedToPodbeanEvent;
+import integration.events.SiteIndexInvalidatedEvent;
 import integration.utils.CopyUtils;
 import integration.utils.PipelineUtils;
 import lombok.SneakyThrows;
@@ -22,6 +23,7 @@ import org.springframework.integration.amqp.dsl.Amqp;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.MessageChannels;
+import org.springframework.integration.event.inbound.ApplicationEventListeningMessageProducer;
 import org.springframework.integration.handler.GenericHandler;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.util.Assert;
@@ -41,6 +43,40 @@ import java.util.stream.Stream;
 class Step3PodbeanIntegrationConfiguration {
 
 	@Bean
+	IntegrationFlow siteGenerationRequestsToSiteGenerationService(AmqpTemplate template,
+			PipelineProperties pipelineProperties) {
+
+		var siteGeneratorRequests = Amqp//
+				.outboundAdapter(template)//
+				.exchangeName(pipelineProperties.getSiteGenerator().getRequestsExchange()) //
+				.routingKey(pipelineProperties.getSiteGenerator().getRequestsRoutingKey());
+
+		return IntegrationFlows.from(siteGenerationChannel()).handle(siteGeneratorRequests).get();
+
+	}
+
+	//
+	/**
+	 * throw a {@link SiteIndexInvalidatedEvent } in the app context and it'll kick off
+	 * the site-generation message
+	 */
+	@Bean
+	ApplicationEventListeningMessageProducer siteGenerationEventsInboundAdapter() {
+		var producer = new ApplicationEventListeningMessageProducer();
+		producer.setEventTypes(SiteIndexInvalidatedEvent.class);
+		return producer;
+	}
+
+	@Bean
+	IntegrationFlow fromSiteInvalidatedEventToMessageFlow() {
+		return IntegrationFlows //
+				.from(siteGenerationEventsInboundAdapter()) //
+				.transform(message -> true).channel(siteGenerationChannel()) //
+				.get();
+	}
+	//
+
+	@Bean
 	IntegrationFlow podbeanPublicationPipeline(GenericApplicationContext context, ApplicationEventPublisher publisher,
 			AwsS3Service s3Service, AmqpTemplate template, ConnectionFactory connectionFactory,
 			PodcastRepository repository, PodbeanClient podbeanClient, PipelineProperties pipelineProperties) {
@@ -48,11 +84,6 @@ class Step3PodbeanIntegrationConfiguration {
 		var publishPodbeanPodcasts = Stream.of(context.getEnvironment().getActiveProfiles())
 				.anyMatch(p -> p.equalsIgnoreCase("production"));
 		var episodeStatus = EpisodeStatus.PUBLISH;
-
-		var siteGeneratorRequests = Amqp//
-				.outboundAdapter(template)//
-				.exchangeName(pipelineProperties.getSiteGenerator().getRequestsExchange()) //
-				.routingKey(pipelineProperties.getSiteGenerator().getRequestsRoutingKey());
 
 		var amqpInboundAdapter = Amqp //
 				.inboundAdapter(connectionFactory, pipelineProperties.getPodbean().getRequestsQueue()) //
@@ -90,7 +121,7 @@ class Step3PodbeanIntegrationConfiguration {
 							"the" + " file " + mp3File.getAbsolutePath() + " does not exist or could not be deleted");
 					return true;
 				})//
-				.handle(siteGeneratorRequests)//
+				.channel(this.siteGenerationChannel())//
 				.get();
 	}
 
@@ -108,6 +139,11 @@ class Step3PodbeanIntegrationConfiguration {
 
 	@Bean
 	MessageChannel podbeanPublicationChannel() {
+		return MessageChannels.direct().get();
+	}
+
+	@Bean
+	MessageChannel siteGenerationChannel() {
 		return MessageChannels.direct().get();
 	}
 
