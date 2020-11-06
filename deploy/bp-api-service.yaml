@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: api.admin.bootifulpodcast.online.
+    external-dns.alpha.kubernetes.io/hostname: api.development.bootifulpodcast.online.
   labels:
     app: api
   name: api
