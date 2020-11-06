@@ -1,21 +1,31 @@
-name: build
+name: Deploy API
+
 
 env:
-  GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
-  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
-  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
-  BP_RABBITMQ_MANAGEMENT_PASSWORD: ${{ secrets.BP_RABBITMQ_MANAGEMENT_PASSWORD }}
-  BP_RABBITMQ_MANAGEMENT_USERNAME: ${{ secrets.BP_RABBITMQ_MANAGEMENT_USERNAME }}
-  BP_POSTGRES_USERNAME: ${{ secrets.BP_POSTGRES_USERNAME }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  PODBEAN_CLIENT_SECRET_PRODUCTION: ${{ secrets.PODBEAN_CLIENT_SECRET_PRODUCTION }}
-  PODBEAN_CLIENT_ID_PRODUCTION: ${{ secrets.PODBEAN_CLIENT_ID_PRODUCTION }}
-  PODBEAN_CLIENT_SECRET_DEVELOPMENT: ${{ secrets.PODBEAN_CLIENT_SECRET_DEVELOPMENT }}
-  PODBEAN_CLIENT_ID_DEVELOPMENT: ${{ secrets.PODBEAN_CLIENT_ID_DEVELOPMENT }}
-  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+  GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+  GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+  CONFIGURATION_SERVER_USERNAME: ${{ secrets.CONFIGURATION_SERVER_USERNAME }}
+  CONFIGURATION_SERVER_PASSWORD: ${{ secrets.CONFIGURATION_SERVER_PASSWORD }}
+  GCLOUD_ZONE_DEVELOPMENT: ${{ secrets.GCLOUD_ZONE_DEVELOPMENT }}
+  GCLOUD_PROJECT_DEVELOPMENT: ${{ secrets.GCLOUD_PROJECT_DEVELOPMENT }}
+  GCLOUD_SA_KEY: ${{ secrets.GCLOUD_SA_KEY }}
+
+#env:
+#  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+#  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+#  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+#  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+#  BP_RABBITMQ_MANAGEMENT_PASSWORD: ${{ secrets.BP_RABBITMQ_MANAGEMENT_PASSWORD }}
+#  BP_RABBITMQ_MANAGEMENT_USERNAME: ${{ secrets.BP_RABBITMQ_MANAGEMENT_USERNAME }}
+#  BP_POSTGRES_USERNAME: ${{ secrets.BP_POSTGRES_USERNAME }}
+#  AWS_REGION: ${{ secrets.AWS_REGION }}
+#  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#  PODBEAN_CLIENT_SECRET_PRODUCTION: ${{ secrets.PODBEAN_CLIENT_SECRET_PRODUCTION }}
+#  PODBEAN_CLIENT_ID_PRODUCTION: ${{ secrets.PODBEAN_CLIENT_ID_PRODUCTION }}
+#  PODBEAN_CLIENT_SECRET_DEVELOPMENT: ${{ secrets.PODBEAN_CLIENT_SECRET_DEVELOPMENT }}
+#  PODBEAN_CLIENT_ID_DEVELOPMENT: ${{ secrets.PODBEAN_CLIENT_ID_DEVELOPMENT }}
+#  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
 
 on:
@@ -31,36 +41,40 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: "Setup Initial Environment"
+        run: |
+          source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
+
       - name: Set up JDK 15
         uses: actions/setup-java@v1
         with:
           java-version: 15
 
+      - name: Setup GCP environment
+        uses: GoogleCloudPlatform/github-actions@0.1.2
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '290.0.1'
-          service_account_key: ${{ secrets.GKE_SA_KEY }}
-          project_id: ${{ secrets.GKE_PROJECT }}
+          service_account_key: ${{ secrets.GCLOUD_SA_KEY }}
+          project_id: ${{ secrets.GCLOUD_PROJECT }}
 
       - run: |-
+          gcloud config set project $GCLOUD_PROJECT
           gcloud --quiet auth configure-docker
 
-      - run: |-
-          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+      - run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone "$GCLOUD_ZONE" --project $GCLOUD_PROJECT
 
-      - name: Setup gcloud environment
-        uses: GoogleCloudPlatform/github-actions@0.1.2
 
-      - name: Deploy to the cluster
+      - name: Connect to Config Server for Configuration
         run: |
+          source $GITHUB_WORKSPACE/.github/workflows/config_client.sh
+          install_config_client_cli
+          hydrate_environment_from_config_server
+
+      - name: Deploy API
+        run: |
+          source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
           cd $GITHUB_WORKSPACE
-          export BP_MODE="DEVELOPMENT"
-          if [ "$GITHUB_EVENT_NAME" = "create" ]; then
-            if [[  "${GITHUB_REF}" =~ "tags" ]]; then
-              BP_MODE="PRODUCTION"
-            fi
-          fi
-          echo "BP_MODE=${BP_MODE}"
-          cd $GITHUB_WORKSPACE
-          ./deploy/deploy-gke/deploy.sh $BP_MODE
+          ./deploy/deploy.sh $BP_MODE
