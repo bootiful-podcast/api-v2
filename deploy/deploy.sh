@@ -18,8 +18,8 @@ PSQL_PW=$BP_POSTGRES_PASSWORD
 
 
 ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
-API_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api.yaml
-API_SERVICE_YAML=${ROOT_DIR}/deploy/deploy-gke/bp-api-service.yaml
+API_YAML=${ROOT_DIR}/deploy/bp-api.yaml
+API_SERVICE_YAML=${ROOT_DIR}/deploy/bp-api-service.yaml
 SECRETS=${APP_NAME}-secrets
 
 ## TODO figure out how to get the test suite running in prod again
