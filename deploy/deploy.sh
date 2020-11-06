@@ -16,7 +16,7 @@ API_SERVICE_YAML=${ROOT_DIR}/deploy/bp-api-service.yaml
 SECRETS=${APP_NAME}-secrets
 
 ## TODO figure out how to get the test suite running in prod again
-image_id=$(docker images -q api)
+image_id=$( docker images -q $APP_NAME )
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
