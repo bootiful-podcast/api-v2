@@ -17,7 +17,7 @@ PSQL_USER=$BP_POSTGRES_USERNAME
 PSQL_PW=$BP_POSTGRES_PASSWORD
 
 
-ROOT_DIR=$(cd $(dirname $0)/../.. && pwd)
+ROOT_DIR=$(cd $(dirname $0)/.. && pwd)
 API_YAML=${ROOT_DIR}/deploy/bp-api.yaml
 API_SERVICE_YAML=${ROOT_DIR}/deploy/bp-api-service.yaml
 SECRETS=${APP_NAME}-secrets
@@ -26,7 +26,7 @@ SECRETS=${APP_NAME}-secrets
 image_id=$(docker images -q api)
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
-mvn -f ${GITHUB_WORKSPACE}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
+mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
 docker tag "${image_id}" gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
 docker push gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
