@@ -21,6 +21,7 @@ SECRETS=${APP_NAME}-secrets
 image_id=$( docker images -q $APP_NAME )
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
+
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
 docker tag "${image_id}" gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
