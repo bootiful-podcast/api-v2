@@ -11,8 +11,9 @@ env:
   GCLOUD_SA_KEY: ${{ secrets.GCLOUD_SA_KEY }}
 
 
-
 on:
+  repository_dispatch:
+    types: deploy-event
   push:
     branches: [ master ]
   pull_request:
