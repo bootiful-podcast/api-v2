@@ -51,7 +51,11 @@ stringData:
   AWS_REGION: "${AWS_REGION}"
   PODBEAN_CLIENT_SECRET: "${PODBEAN_CLIENT_SECRET}"
   PODBEAN_CLIENT_ID: "${PODBEAN_CLIENT_ID}"
+  PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME: "${PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME}"
+  PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME: "${PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME}"
 ")
+#podcast.pipeline.s3.input-bucket-name=podcast-input-bucket
+#podcast.pipeline.s3.output-bucket-name=podcast-output-bucket
 
 kubectl apply -f $API_YAML
 

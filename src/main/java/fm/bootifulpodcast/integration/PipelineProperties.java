@@ -79,7 +79,7 @@ public class PipelineProperties {
 
 		private File inboundPodcastsDirectory;
 
-		private String inputBucketName = "podcast-input-bucket";
+		// private String inputBucketName = "podcast-input-bucket-development";
 
 		// todo this needs to be changed here AND in the Python Processor code
 		private String requestsQueue = "podcast-processor-requests";
