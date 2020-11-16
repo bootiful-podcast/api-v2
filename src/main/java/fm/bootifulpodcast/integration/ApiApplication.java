@@ -22,15 +22,15 @@ import org.springframework.web.client.RestTemplate;
 public class ApiApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
 	@Bean
 	InitializingBean initializingBean(PipelineProperties pipelineProperties) {
 		return () -> {
-			var publishPublicly = pipelineProperties.getPodbean().isPublishPublicly();
-			log.info("podbean.publishPublicly: " + publishPublicly);
+			log.info("------------------------------");
+			log.info(pipelineProperties.toString());
+			log.info("------------------------------");
 		};
 	}
 
@@ -47,29 +47,29 @@ public class ApiApplication {
 
 	@Bean
 	PipelineService pipelineService(PipelineProperties pipelineProperties, RabbitMqHelper helper,
-			PodcastRepository repository, AwsS3Service s3, ServerUriResolver resolver,
-			Step1UnproducedPipelineIntegrationConfiguration left, Step1PreproducedIntegrationConfiguration right) {
+																																	PodcastRepository repository, AwsS3Service s3, ServerUriResolver resolver,
+																																	Step1UnproducedPipelineIntegrationConfiguration left, Step1PreproducedIntegrationConfiguration right) {
 
 		log.info("initializing PipelineService: 1. Declare required RabbitMQ bindings");
 		helper.defineDestination(pipelineProperties.getSiteGenerator().getRequestsExchange(),
-				pipelineProperties.getSiteGenerator().getRequestsQueue(),
-				pipelineProperties.getSiteGenerator().getRequestsRoutingKey());
+			pipelineProperties.getSiteGenerator().getRequestsQueue(),
+			pipelineProperties.getSiteGenerator().getRequestsRoutingKey());
 
 		helper.defineDestination(pipelineProperties.getPodbean().getRequestsExchange(),
-				pipelineProperties.getPodbean().getRequestsQueue(),
-				pipelineProperties.getPodbean().getRequestsRoutingKey());
+			pipelineProperties.getPodbean().getRequestsQueue(),
+			pipelineProperties.getPodbean().getRequestsRoutingKey());
 
 		helper.defineDestination(pipelineProperties.getProcessor().getRequestsExchange(),
-				pipelineProperties.getProcessor().getRequestsQueue(),
-				pipelineProperties.getProcessor().getRequestsRoutingKey());
+			pipelineProperties.getProcessor().getRequestsQueue(),
+			pipelineProperties.getProcessor().getRequestsRoutingKey());
 
 		helper.defineDestination(pipelineProperties.getProcessor().getRepliesExchange(),
-				pipelineProperties.getProcessor().getRepliesQueue(),
-				pipelineProperties.getProcessor().getRepliesRoutingKey());
+			pipelineProperties.getProcessor().getRepliesQueue(),
+			pipelineProperties.getProcessor().getRepliesRoutingKey());
 
 		log.info("initializing PipelineService: 2. Build PipelineService");
 		return new PipelineService(left.unproducedPipelineMessageChannel(), right.preproducedPipelineMessageChannel(),
-				s3, repository, resolver);
+			s3, repository, resolver);
 	}
 
 }
