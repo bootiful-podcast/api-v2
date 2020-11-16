@@ -54,4 +54,8 @@ stringData:
 
 kubectl apply -f $API_YAML
 
-kubectl get service | grep $APP_NAME || kubectl apply -f $API_SERVICE_YAML
+# kubectl get service | grep $APP_NAME || kubectl apply -f $API_SERVICE_YAML
+
+kubectl apply -f $API_SERVICE_YAML
+
+kubectl rollout restart api
