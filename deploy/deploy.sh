@@ -59,4 +59,4 @@ kubectl apply -f $API_YAML
 
 kubectl apply -f $API_SERVICE_YAML
 
-kubectl rollout restart api
+kubectl rollout restart deployments/api
