@@ -81,7 +81,8 @@ class Step3PodbeanIntegrationConfiguration {
 
 		var publishPodbeanPodcasts = Stream.of(context.getEnvironment().getActiveProfiles())
 				.anyMatch(p -> p.equalsIgnoreCase("production"));
-		var episodeStatus = EpisodeStatus.PUBLISH;
+		var episodeStatus = pipelineProperties.getPodbean().isPublishPublicly() ? EpisodeStatus.PUBLISH
+				: EpisodeStatus.DRAFT;
 
 		var amqpInboundAdapter = Amqp //
 				.inboundAdapter(connectionFactory, pipelineProperties.getPodbean().getRequestsQueue()) //
@@ -111,9 +112,7 @@ class Step3PodbeanIntegrationConfiguration {
 					this.downloadFromS3(s3Service, podcast, jpgFile, jpgFileName);
 					var jpgUpload = podbeanClient.upload(MediaType.IMAGE_JPEG, jpgFile, jpgFile.length());
 					var episode = podbeanClient.publishEpisode(podcast.getTitle(), podcast.getDescription(),
-							episodeStatus, pipelineProperties.getPodbean().isPublishPublicly() ? EpisodeType.PUBLIC
-									: EpisodeType.PRIVATE,
-							mp3Upload.getFileKey(), jpgUpload.getFileKey());
+							episodeStatus, EpisodeType.PUBLIC, mp3Upload.getFileKey(), jpgUpload.getFileKey());
 					publisher.publishEvent(new PodcastPublishedToPodbeanEvent(podcast.getUid(), episode.getMediaUrl(),
 							episode.getPlayerUrl(), episode.getLogoUrl()));
 					log.info("the episode has been published to " + episode.toString() + '.');
