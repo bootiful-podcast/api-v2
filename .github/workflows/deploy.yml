@@ -36,18 +36,6 @@ jobs:
       
       - uses: bootiful-podcast/bp-mode-github-action@v34
 
-      - uses: joshlong/config-client-github-action@v29
-        with:
-          config-server-uri: http://34.71.92.231
-          config-server-username: ${{ secrets.CONFIGURATION_SERVER_USERNAME  }}
-          config-server-password: ${{ secrets.CONFIGURATION_SERVER_PASSWORD  }}
-          config-server-application-id: deployment
-          config-server-profile: ${{ env.BP_MODE_LOWERCASE }}
-
-      # - name: "Setup Initial Environment"
-      #   run: |
-      #     source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
-
       - name: Set up JDK 15
         uses: actions/setup-java@v1
         with:
@@ -82,11 +70,6 @@ jobs:
           config-server-application-id: deployment
           config-server-profile: ${{ env.BP_MODE_LOWERCASE }}
 
-      # - name: Connect to Config Server for Configuration
-      #   run: |
-      #     source $GITHUB_WORKSPACE/.github/workflows/config_client.sh
-      #     install_config_client_cli
-      #     hydrate_environment_from_config_server
 
       - name: Deploy API
         run: |
