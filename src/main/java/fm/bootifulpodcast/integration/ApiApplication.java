@@ -26,7 +26,7 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
-	@Bean
+	// @Bean
 	InitializingBean initializingBean(Environment environment, PipelineProperties pipelineProperties) {
 		return () -> {
 			log.info("------------------------------");

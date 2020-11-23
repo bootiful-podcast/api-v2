@@ -51,6 +51,7 @@ class CorsConfig {
 							/* Secures the Actuator endpoints */
 							.mvcMatchers("/actuator/health").permitAll() //
 							.mvcMatchers("/actuator/health/**").permitAll() //
+							.mvcMatchers("/site/podcasts").permitAll() //
 							.mvcMatchers("/admin/**").authenticated() //
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
 							/* Secures everything else */
