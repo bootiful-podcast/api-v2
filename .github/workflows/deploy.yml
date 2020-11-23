@@ -14,8 +14,8 @@ env:
   GCLOUD_PROJECT_PRODUCTION: ${{ secrets.GCLOUD_PROJECT_DEVELOPMENT }}
   GCLOUD_SA_KEY: ${{ secrets.GCLOUD_SA_KEY }}
   GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-  CONFIGURATION_SERVER_URI_PRODUCTION: https://configuration.bootifulpodcast.online
-  CONFIGURATION_SERVER_URI_DEVELOPMENT: https://configuration.development.bootifulpodcast.online
+  CONFIGURATION_SERVER_URI_PRODUCTION: https://configuration.bootifulpodcast.fm
+  CONFIGURATION_SERVER_URI_DEVELOPMENT: https://configuration.development.bootifulpodcast.fm
   GKE_CLUSTER_NAME_PRODUCTION: bootiful-podcast-production
   GKE_CLUSTER_NAME_DEVELOPMENT: bootiful-podcast-development
 
@@ -84,6 +84,6 @@ jobs:
 
       - name: Deploy API
         run: |
-          source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
+          # source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
           cd $GITHUB_WORKSPACE
           ./deploy/deploy.sh

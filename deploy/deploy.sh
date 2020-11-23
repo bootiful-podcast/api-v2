@@ -21,6 +21,11 @@ SECRETS=${APP_NAME}-secrets
 image_id=$( docker images -q $APP_NAME )
 docker rmi -f $image_id || echo "there is not an existing image to delete..."
 
+## todo use Kustomize and secretsGenerators instead of inlining secrets like this. 
+
+## todo use get rid of the docker image generation business here and also use the 
+##      (buildName) property in `spring-boot:build-image` to output the image to the 
+##      right image name out of the gate rather than having to tag it
 
 mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)

@@ -2,7 +2,7 @@
 
 U=$1
 P=$2
-H=${3:-http://api.admin.bootifulpodcast.online}
+H=${3:-http://api.admin.bootifulpodcast.fm}
 E=0
 MESSAGE="Please specify a "
 
