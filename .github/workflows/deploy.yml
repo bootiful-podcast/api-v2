@@ -16,6 +16,8 @@ env:
   GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
   CONFIGURATION_SERVER_URI_PRODUCTION: https://configuration.bootifulpodcast.online
   CONFIGURATION_SERVER_URI_DEVELOPMENT: https://configuration.development.bootifulpodcast.online
+  GKE_CLUSTER_NAME_PRODUCTION: bootiful-podcast-production
+  GKE_CLUSTER_NAME_DEVELOPMENT: bootiful-podcast-development
 
 on:
   repository_dispatch:
@@ -31,12 +33,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v2
-      
-      - name: "Contribute Environment Variables "
-        run: |
-          echo "GKE_CLUSTER_NAME=bootiful-podcast-${BP_MODE_LOWERCASE}" >> $GITHUB_ENV
-          echo "we want to connect to $CONFIGURATION_SERVER_URI "
-          echo "we want to connect to $CONFIGURATION_SERVER_URI "
       
       - uses: bootiful-podcast/bp-mode-github-action@v34
 
