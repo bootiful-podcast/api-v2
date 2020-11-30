@@ -48,11 +48,10 @@ jobs:
           project_id: ${{ env.GCLOUD_PROJECT }}
           export_default_credentials: true
 
+
       - run: |-
           gcloud config set project $GCLOUD_PROJECT
           gcloud --quiet auth configure-docker
-
-      - run: |
           gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone "$GCLOUD_ZONE" --project $GCLOUD_PROJECT
 
       # todo factor this into its own separate github action!
