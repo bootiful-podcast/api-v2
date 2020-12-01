@@ -20,7 +20,7 @@ OD=${ROOT_DIR}/overlays/${BP_MODE_LOWERCASE}
 SECRETS=${APP_NAME}-secrets
 SECRETS_FN=${OD}/${APP_NAME}-secrets.env
 
-mvn -f ${ROOT_DIR}/pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
+mvn -f ${ROOT_DIR}/../pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q api)
 docker tag "${image_id}" gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
 docker push gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
