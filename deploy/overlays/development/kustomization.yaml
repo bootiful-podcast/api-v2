@@ -12,18 +12,5 @@ commonLabels:
   env: development
 
 secretGenerator:
-  - name: rabbitmq-secrets
-    env: rabbitmq-secrets.env
-
-  - name: postgresql-secrets
-    env: postgresql-secrets.env
-
-configMapGenerator:
-
-  - name: postgresql-init-db-configmap
-    files:
-      - bin/init_db.sh
-
-  - name: backup-cronjob-configmap
-    files:
-      - bin/backup_db.sh
+  - name: api-secrets
+    env: api-secrets.env
