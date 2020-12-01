@@ -1,10 +1,9 @@
 ---
 resources:
-  - backup_pvc.yaml
-  - namespace.yaml
-  - rabbitmq.yaml
-  - backup_cronjob.yaml
-  - postgresql.yaml
+  - certificate.yaml
+  - deployment.yaml
+  - ingress.yaml
+  - service.yaml
 
 namespace: development
 
