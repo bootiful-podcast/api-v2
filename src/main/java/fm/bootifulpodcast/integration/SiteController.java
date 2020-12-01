@@ -60,7 +60,8 @@ class SiteController {
 		var podcastList = new ArrayList<Podcast>();
 		this.repository.findAll().forEach(podcastList::add);
 
-		var allPodcasts = podcastList.stream()
+		var allPodcasts = podcastList//
+				.stream()//
 				.peek(pr -> this.mapOfRenderedMarkdown.put(pr.getUid(),
 						markdownService.convertMarkdownTemplateToHtml(pr.getDescription()).trim()))
 				.map(p -> new PodcastRecord(p, "episode-photos/" + p.getUid() + ".jpg", dateFormat.format(p.getDate()),
