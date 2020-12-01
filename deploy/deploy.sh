@@ -63,11 +63,11 @@ docker push gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
 #
 #kubectl rollout restart deployments/api
 
+
 export RESERVED_IP_NAME=${APP_NAME}-${BP_MODE_LOWERCASE}-ip
 gcloud compute addresses list --format json | jq '.[].name' -r | grep $RESERVED_IP_NAME ||
   gcloud compute addresses create $RESERVED_IP_NAME --global
 touch $SECRETS_FN
-
 echo writing to "$SECRETS_FN "
 cat <<EOF >${SECRETS_FN}
 BP_MODE=${BP_MODE_LOWERCASE}
