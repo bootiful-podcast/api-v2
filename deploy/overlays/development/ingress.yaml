@@ -6,7 +6,7 @@ metadata:
     networking.gke.io/managed-certificates: "api-development-certificate"
     kubernetes.io/ingress.global-static-ip-name: "development-ip"
 #    kubernetes.io/ingress.global-static-ip-name: "api-development-ip"
-  name: configuration-ingress
+  name: api-ingress
 spec:
   rules:
     - host: api.development.bootifulpodcast.fm
