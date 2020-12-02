@@ -79,6 +79,5 @@ jobs:
 
       - name: Deploy API
         run: |
-          # source $GITHUB_WORKSPACE/.github/workflows/bp_mode.sh
           cd $GITHUB_WORKSPACE
           ./deploy/deploy.sh
