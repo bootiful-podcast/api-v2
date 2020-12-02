@@ -4,7 +4,8 @@ metadata:
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "true"
     networking.gke.io/managed-certificates: "api-development-certificate"
-    kubernetes.io/ingress.global-static-ip-name: "api-development-ip"
+    kubernetes.io/ingress.global-static-ip-name: "development-ip"
+#    kubernetes.io/ingress.global-static-ip-name: "api-development-ip"
   name: configuration-ingress
 spec:
   rules:
