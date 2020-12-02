@@ -13,6 +13,7 @@
     <artifactId>api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
+        
         <lucene.version>8.6.2</lucene.version>
         <jsoup.version>1.13.1</jsoup.version>
         <artifactory-maven-plugin.version>
