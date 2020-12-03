@@ -4,13 +4,11 @@ import fm.bootifulpodcast.integration.AssetTypes;
 import fm.bootifulpodcast.integration.PreproducedPodcastPackageManifest;
 import fm.bootifulpodcast.integration.UnproducedPodcastPackageManifest;
 import fm.bootifulpodcast.integration.aws.AwsS3Service;
-import fm.bootifulpodcast.integration.events.PodcastArchiveUploadedEvent;
-import fm.bootifulpodcast.integration.events.PodcastArtifactsUploadedToProcessorEvent;
-import fm.bootifulpodcast.integration.events.PodcastProcessedEvent;
-import fm.bootifulpodcast.integration.events.PodcastPublishedToPodbeanEvent;
+import fm.bootifulpodcast.integration.events.*;
 import fm.bootifulpodcast.integration.utils.CopyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +25,8 @@ class Recorder {
 	private final AwsS3Service s3Service;
 
 	private final PodcastRepository repository;
+
+	private final ApplicationEventPublisher publisher;
 
 	private static String[] baseAndExtension(String fileName) {
 		if (fileName.contains(".")) {
@@ -104,7 +104,7 @@ class Recorder {
 
 	@EventListener
 	public void podcastProcessed(PodcastProcessedEvent event) {
-		log.info("podcast audio file has been processed: " + event.toString());
+		log.info("PodcastProcessedEvent: " + event.toString());
 		var uid = event.getUid();
 		repository.findByUid(uid).ifPresentOrElse(podcast -> {
 			var uri = s3Service.createS3Uri(event.getBucketName(), uid, event.getFileName());
@@ -121,8 +121,11 @@ class Recorder {
 			podcast.setPodbeanDraftCreated(new Date());
 			podcast.setPodbeanPhotoUri(event.getSource().getLogoUrl().toString());
 			podcast.setPodbeanMediaUri(event.getSource().getMediaUrl().toString());
+			log.info("PodcastPublishedToPodbeanEvent: " + event.toString());
 			repository.save(podcast);
 		}, missingPodcastRunnable(uid));
+
+		this.publisher.publishEvent(new SearchIndexInvalidatedEvent(new Date()));
 	}
 
 }
