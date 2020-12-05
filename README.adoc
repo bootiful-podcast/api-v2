@@ -1,0 +1,24 @@
+= The Podcast API
+
+![API](https://github.com/bootiful-podcast/api-v2/workflows/API/badge.svg)
+
+== Description
+
+This service is the clearing house for new podcast packages uploaded
+from the Studio. Here's the basic workflow.
+
+* A user in studio publishes a new episode which in turn uploads the resulting audio files to this API.
+* This API records information about the episode in the database and then begins the publication process.
+* This API publishes those files to Amazon S3 and then sends a message via RabbitMQ to the processsor. The processor is responsible for creating the final audio file.
+* When the response comes from the processor, the resulting file is uploaded to Podbean and recorded in the PostgreSQL database.
+* At this point, the episode should be visible to people in their podcasting clients on their mobile devices worldwide and the new episode should be live on http://bootifulpodcast.fm[the site].
+* once the podcast has been published, this API sends notifications alerting the user
+
+
+== Technical
+
+This module uses Spring Boot, Spring Integration, Spring Security, the AWS API, the Sendgrid API, and the Podbean API (via https://github.com/bootiful-podcast/podbean-client[the Podbean client]).
+
+In production, this module is accessible (through JWT-token authenticated endpoints ) at api.bootifulpodcast.fm. In development, this module is accessible at api.development.bootifulpodcast.fm.
+
+
