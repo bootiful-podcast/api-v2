@@ -7,7 +7,7 @@ image::https://github.com/bootiful-podcast/api-v2/workflows/Deploy/badge.svg[Sta
 == Description
 
 This service is the clearing house for new podcast packages uploaded
-from the Studio. Here's the basic workflow.
+from the http://github.com/bootiful-podcast/studio-v2[studio]. Here's the basic workflow.
 
 * A user in studio publishes a new episode which in turn uploads the resulting audio files to this API.
 * This API records information about the episode in the database and then begins the publication process.
