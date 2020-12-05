@@ -1,6 +1,8 @@
 = The Podcast API
 
-![API](https://github.com/bootiful-podcast/api-v2/workflows/API/badge.svg)
+image::https://github.com/bootiful-podcast/api-v2/workflows/Deploy/badge.svg[Status]
+
+
 
 == Description
 
