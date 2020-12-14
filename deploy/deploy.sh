@@ -30,6 +30,9 @@ echo "GCR_IMAGE_NAME=$GCR_IMAGE_NAME"
 echo "IMAGE_NAME=$IMAGE_NAME"
 echo "IMAGE_TAG=$IMAGE_TAG"
 
+docker rmi $(docker images -a -q )
+
+
 mvn -f ${ROOT_DIR}/../pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 #image_id=$(docker images -q api)
 #docker tag "${image_id}" gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
