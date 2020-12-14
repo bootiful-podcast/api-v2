@@ -39,6 +39,7 @@ docker push $IMAGE_NAME
 echo "pushing ${image_id} to $IMAGE_NAME "
 echo "tagging ${GCR_IMAGE_NAME}"
 
+
 export RESERVED_IP_NAME=${APP_NAME}-${BP_MODE_LOWERCASE}-ip
 gcloud compute addresses list --format json | jq '.[].name' -r | grep $RESERVED_IP_NAME ||
   gcloud compute addresses create $RESERVED_IP_NAME --global
