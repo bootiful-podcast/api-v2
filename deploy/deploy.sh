@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+export PROJECT_ID=${GCLOUD_PROJECT}
+
 APP_NAME=api
 
 RMQ_USER=$BP_RABBITMQ_MANAGEMENT_USERNAME
