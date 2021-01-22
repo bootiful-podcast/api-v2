@@ -16,4 +16,3 @@ secretGenerator:
   - name: api-secrets
     envs:
       - api-secrets.env
-      #    env: api-secrets.env
