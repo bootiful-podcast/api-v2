@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    networking.gke.io/managed-certificates: "api-production-certificate"
+    networking.gke.io/managed-certificates: "api-certificate"
     kubernetes.io/ingress.global-static-ip-name: "api-production-ip"
   name: api-ingress
 spec:

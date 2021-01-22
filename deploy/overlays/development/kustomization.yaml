@@ -11,6 +11,9 @@ commonLabels:
   env: development
   app: api
 
+
 secretGenerator:
   - name: api-secrets
-    env: api-secrets.env
+    envs:
+      - api-secrets.env
+      #    env: api-secrets.env
