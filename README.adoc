@@ -22,5 +22,3 @@ from the http://github.com/bootiful-podcast/studio-v2[studio]. Here's the basic 
 This module uses Spring Boot, Spring Integration, Spring Security, the AWS API, the Sendgrid API, and the Podbean API (via https://github.com/bootiful-podcast/podbean-client[the Podbean client]).
 
 In production, this module is accessible (through JWT-token authenticated endpoints ) at api.bootifulpodcast.fm. In development, this module is accessible at api.development.bootifulpodcast.fm.
-
-
