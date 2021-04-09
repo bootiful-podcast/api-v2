@@ -73,7 +73,7 @@ jobs:
           config-server-uri: http://${CONFIGURATION_SERVER_HOST}
           config-server-username: ${{ secrets.CONFIGURATION_SERVER_USERNAME  }}
           config-server-password: ${{ secrets.CONFIGURATION_SERVER_PASSWORD  }}
-          config-server-application-id: production
+          config-server-application-id: deployment
           config-server-profile: ${{ env.BP_MODE_LOWERCASE }}
 
 
