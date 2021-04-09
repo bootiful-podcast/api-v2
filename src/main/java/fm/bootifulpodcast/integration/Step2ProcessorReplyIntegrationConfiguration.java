@@ -47,7 +47,7 @@ class Step2ProcessorReplyIntegrationConfiguration {
 
 	private final ConnectionFactory connectionFactory;
 
-	private final NotificationService emailer;
+	// private final NotificationService emailer;
 
 	private final TypeReference<Map<String, String>> reference = new TypeReference<Map<String, String>>() {
 	};
@@ -80,16 +80,20 @@ class Step2ProcessorReplyIntegrationConfiguration {
 		this.publisher.publishEvent(new PodcastProcessedEvent(uid, outputBucketName, outputFileName));
 
 		return PipelineUtils.podcastOrElseThrow(uid, this.repository.findByUid(uid).map(podcast -> {
-			var data = Map.<String, Object>of(//
-					"uid", uid, //
-					"title", podcast.getTitle(), //
-					"outputMediaUri", this.service.buildMediaUriForPodcastById(podcast.getId()).toString());
-			var content = this.emailer.render("file-uploaded.ftl", data);
-			var response = this.emailer.send(new Email(notificationsProperties.getToEmail()),
-					new Email(notificationsProperties.getFromEmail()), notificationsProperties.getSubject(), content);
-			Assert.isTrue(HttpStatus.valueOf(response.getStatusCode()).is2xxSuccessful(),
-					"tried to send a notification email with SendGrid, and got back a non-positive status code. "
-							+ response.getBody());
+			// var data = Map.<String, Object>of(//
+			// "uid", uid, //
+			// "title", podcast.getTitle(), //
+			// "outputMediaUri",
+			// this.service.buildMediaUriForPodcastById(podcast.getId()).toString());
+			// var content = this.emailer.render("file-uploaded.ftl", data);
+			// var response = this.emailer.send(new
+			// Email(notificationsProperties.getToEmail()),
+			// new Email(notificationsProperties.getFromEmail()),
+			// notificationsProperties.getSubject(), content);
+			// Assert.isTrue(HttpStatus.valueOf(response.getStatusCode()).is2xxSuccessful(),
+			// "tried to send a notification email with SendGrid, and got back a
+			// non-positive status code. "
+			// + response.getBody());
 			return podcast;
 		}));
 
