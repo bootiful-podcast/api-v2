@@ -1,10 +1,8 @@
 package fm.bootifulpodcast.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.sendgrid.helpers.mail.objects.Email;
 import fm.bootifulpodcast.integration.database.Podcast;
 import fm.bootifulpodcast.integration.database.PodcastRepository;
-import fm.bootifulpodcast.integration.email.NotificationService;
 import fm.bootifulpodcast.integration.events.PodcastProcessedEvent;
 import fm.bootifulpodcast.integration.utils.JsonHelper;
 import fm.bootifulpodcast.integration.utils.PipelineUtils;
@@ -15,12 +13,9 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.integration.amqp.dsl.Amqp;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.util.Assert;
-
 import java.util.Map;
 
 /**
@@ -75,7 +70,7 @@ class Step2ProcessorReplyIntegrationConfiguration {
 	}
 
 	private Podcast handleReply(String uid, String outputFileName, String outputBucketName) {
-		var notificationsProperties = this.properties.getNotifications();
+		// var notificationsProperties = this.properties.getNotifications();
 
 		this.publisher.publishEvent(new PodcastProcessedEvent(uid, outputBucketName, outputFileName));
 
