@@ -96,7 +96,7 @@ class CorsConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				log.info("enabling global CORS supports");
-				registry.addMapping("/**").allowedOrigins("https://bootifulpodcast.fm", "http://localhost:8080");
+				registry.addMapping("/**").allowedOrigins("*", "https://bootifulpodcast.fm", "http://localhost:8080");
 			}
 		};
 	}
