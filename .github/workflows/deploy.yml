@@ -68,6 +68,8 @@ jobs:
       # todo factor this into its own separate github action!
       - name: Discover Spring Cloud Config Server 
         run: |
+          kubectl get deployments
+          echo $BP_MODE_LOWERCASE
           CONFIG_IP=$( kubectl get svc configuration -n $BP_MODE_LOWERCASE --output="jsonpath={.status.loadBalancer.ingress[0].ip}" )
           echo "The configuration service lives at ${CONFIG_IP}. "
           echo "CONFIGURATION_SERVER_HOST=${CONFIG_IP}" >> $GITHUB_ENV
