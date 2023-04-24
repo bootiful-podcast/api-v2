@@ -22,14 +22,12 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // todo go back in history and restore the SecurityConfiguration that used to be here
@@ -66,22 +64,16 @@ class CorsConfig {
 					.csrf(AbstractHttpConfigurer::disable);
 		}
 
-		/*
-		 * @Bean CorsConfigurationSource corsConfigurationSource() { var methods = Stream
-		 * .of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT,
-		 * HttpMethod.GET)// .map(Enum::name)// .collect(Collectors.toList());
-		 *
-		 * var configuration = new CorsConfiguration();
-		 * configuration.setAllowCredentials(true);
-		 * configuration.setAllowedHeaders(List.of("*"));
-		 * configuration.setAllowedOrigins(List.of("*"));
-		 * configuration.setAllowedMethods(methods);
-		 *
-		 * var source = new UrlBasedCorsConfigurationSource();
-		 * source.registerCorsConfiguration("/**", configuration);
-		 *
-		 * return source; }
-		 */
+		@Bean
+		CorsConfigurationSource corsConfigurationSource() {
+			var methods = Stream.of(HttpMethod.values()).map(Enum::name).toList();
+			var configuration = new CorsConfiguration();
+			configuration.setAllowCredentials(true);
+			configuration.setAllowedHeaders(List.of("*"));
+			configuration.setAllowedOrigins(List.of("*"));
+			configuration.setAllowedMethods(methods);
+			return request -> configuration;
+		}
 
 	}
 
