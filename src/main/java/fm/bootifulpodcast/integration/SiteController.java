@@ -15,6 +15,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  * Provides endpoints designed to support the working of the site
  */
 @Slf4j
+@CrossOrigin(originPatterns = "*")
 @RestController
 @RequestMapping("/site")
 @RequiredArgsConstructor
@@ -95,7 +97,7 @@ class SiteController {
 		objectNode.put("description", this.mapOfRenderedMarkdown.get(pr.getPodcast().getUid()));
 		objectNode.put("dateAndTime", pr.getDateAndTime()); // correct
 		objectNode.put("dataAndTime", pr.getDateAndTime()); // does anything else use
-															// this?
+		// this?
 		// mistaken property?
 		objectNode.put("episodeUri", "/podcasts/" + pr.getPodcast().getUid() + "/produced-audio");
 		return objectNode;

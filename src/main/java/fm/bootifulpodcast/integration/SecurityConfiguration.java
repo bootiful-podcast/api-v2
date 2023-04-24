@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -34,11 +35,17 @@ import java.util.stream.Stream;
 @Configuration
 class CorsConfig {
 
+	@Slf4j
 	@Configuration
 	public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
+
+			log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName() + '.' + " [" +
+
+					"]");
+
 			http //
 					.authorizeRequests(ae -> ae //
 							.mvcMatchers("/podcasts/search").authenticated() //
