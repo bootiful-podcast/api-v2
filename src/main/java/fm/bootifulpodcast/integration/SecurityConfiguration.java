@@ -22,6 +22,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -72,7 +73,11 @@ class CorsConfig {
 			configuration.setAllowedHeaders(List.of("*"));
 			configuration.setAllowedOrigins(List.of("*"));
 			configuration.setAllowedMethods(methods);
-			return request -> configuration;
+
+			var source = new UrlBasedCorsConfigurationSource();
+			source.registerCorsConfiguration("/**", configuration);
+
+			return source;
 		}
 
 	}
