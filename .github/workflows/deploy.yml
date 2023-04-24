@@ -14,12 +14,12 @@ env:
   CONFIGURATION_SERVER_URI: https://configuration.bootifulpodcast.fm
   # CONFIGURATION_SERVER_URI_PRODUCTION: https://configuration.bootifulpodcast.fm
   # CONFIGURATION_SERVER_URI_DEVELOPMENT: https://configuration.development.bootifulpodcast.fm
-  # GKE_CLUSTER_NAME_PRODUCTION: ${{ secrets.GKE_CLUSTER_NAME_PRODUCTION }}
+  GKE_CLUSTER : ${{ secrets.GKE_CLUSTER_NAME_PRODUCTION }}
   # GKE_CLUSTER_NAME_DEVELOPMENT:    ${{ secrets.GKE_CLUSTER_NAME_DEVELOPMENT }}
   # GCLOUD_ZONE_DEVELOPMENT: ${{ secrets.GCLOUD_ZONE_DEVELOPMENT }}
-  # GCLOUD_ZONE_PRODUCTION: ${{ secrets.GCLOUD_ZONE_DEVELOPMENT }}
+  GCLOUD_ZONE : ${{ secrets.GCLOUD_ZONE_PRODUCTION }}
   # GCLOUD_PROJECT_DEVELOPMENT: ${{ secrets.GCLOUD_PROJECT_DEVELOPMENT }}
-  GCLOUD_PROJECT_PRODUCTION: ${{ secrets.GCLOUD_PROJECT_DEVELOPMENT }}
+  GCLOUD_PROJECT : ${{ secrets.GCLOUD_PROJECT_DEVELOPMENT }}
   # GCLOUD_SA_KEY: ${{ secrets.GCLOUD_SA_KEY }}
 
 on:
@@ -72,7 +72,7 @@ jobs:
           location: '${{ env.GKE_ZONE }}'
 
       - run: |
-          gcloud config set project $GCLOUD_PROJECT_PRODUCTION
+          gcloud config set project $GCLOUD_PROJECT 
           gcloud --quiet auth configure-docker
           kubectl get pods
 
