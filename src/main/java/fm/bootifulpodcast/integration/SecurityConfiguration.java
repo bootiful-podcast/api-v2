@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,12 +20,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Stream;
+import java.util.List;
 
 // todo go back in history and restore the SecurityConfiguration that used to be here
 // todo also go back into the pom.xml and restore the jwt-spring-boot-starter
@@ -33,64 +37,77 @@ import java.util.stream.Stream;
 @Slf4j
 class CorsConfig {
 
-	@Slf4j
-	@Configuration
-	public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    @Slf4j
+    @Configuration
+    public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName());
-			http //
-					.authorizeRequests(ae -> ae //
-							.mvcMatchers("/podcasts/search").authenticated() //
-							.mvcMatchers("/podcasts/index").authenticated() //
-							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
-							.mvcMatchers("/podcasts/*/profile-photo").permitAll() //
-							.mvcMatchers("/podcasts/*/produced-audio").permitAll() //
-							.mvcMatchers("/podcasts").authenticated() //
-							.mvcMatchers("/actuator/health").permitAll() //
-							.mvcMatchers("/actuator/health/**").permitAll() //
-							.mvcMatchers("/site/podcasts").permitAll() //
-							.mvcMatchers("/admin/**").authenticated() //
-							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
-							.anyRequest().permitAll() //
-					) //
-					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
-					.cors(AbstractHttpConfigurer::disable)//
-					.csrf(AbstractHttpConfigurer::disable);
-		}
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName());
+            http //
+                    .authorizeRequests(ae -> ae //
+                            .mvcMatchers("/podcasts/search").authenticated() //
+                            .mvcMatchers("/podcasts/index").authenticated() //
+                            .mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
+                            .mvcMatchers("/podcasts/*/profile-photo").permitAll() //
+                            .mvcMatchers("/podcasts/*/produced-audio").permitAll() //
+                            .mvcMatchers("/podcasts").authenticated() //
+                            .mvcMatchers("/actuator/health").permitAll() //
+                            .mvcMatchers("/actuator/health/**").permitAll() //
+                            .mvcMatchers("/site/podcasts").permitAll() //
+                            .mvcMatchers("/admin/**").authenticated() //
+                            .requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
+                            .anyRequest().permitAll() //
+                    ) //
+                    .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
+                    .cors(Customizer.withDefaults())//
+                    .csrf(AbstractHttpConfigurer::disable);
+        }
 
-	}
+    }
 
-	@Bean
-	UserDetailsService jdbcUserDetailsService(UserRepository repository) {
-		return new JdbcUserDetailsService(repository);
-	}
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:8080", "https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm"));
+        configuration.setAllowedMethods(this.methods);
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("Authorization", "Requestor-Type"));
+        configuration.setExposedHeaders(List.of("X-Get-Header"));
+        configuration.setMaxAge(3600L);
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+    private final List<String> methods = List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD");
 
-	@Bean
-	WebMvcConfigurer corsConfigurer() {
+    @Bean
+    UserDetailsService jdbcUserDetailsService(UserRepository repository) {
+        return new JdbcUserDetailsService(repository);
+    }
 
-		return new WebMvcConfigurer() {
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				log.info("enabling global CORS supports");
-				var methods = Stream
-						.of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.GET)//
-						.map(Enum::name).toList();
+    @Bean
+    WebMvcConfigurer corsConfigurer() {
 
-				registry.addMapping("/**")//
-						.allowedMethods(methods.toArray(new String[0]))//
-						.allowedOriginPatterns("*")
-						.allowedOrigins("https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm");
-			}
-		};
-	}
+        return new WebMvcConfigurer() {
+
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                log.info("enabling global CORS supports");
+                registry.addMapping("/**")//
+                        .allowedMethods(methods.toArray(new String[0]))//
+                        .allowedOriginPatterns("*")
+                        .allowedOrigins("https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm");
+            }
+        };
+    }
 
 }
 
@@ -98,62 +115,65 @@ class CorsConfig {
 @RequiredArgsConstructor
 class JdbcUserDetailsService implements UserDetailsService {
 
-	@RequiredArgsConstructor
-	private static class JpaUserDetails implements UserDetails {
+    @RequiredArgsConstructor
+    private static class JpaUserDetails implements UserDetails {
 
-		private final User user;
+        private final User user;
 
-		@Override
-		public Collection<? extends GrantedAuthority> getAuthorities() {
-			return Collections.singleton(new SimpleGrantedAuthority("USER"));
-		}
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        }
 
-		@Override
-		public String getPassword() {
-			return this.user.getPassword();
-		}
+        @Override
+        public String getPassword() {
+            return this.user.getPassword();
+        }
 
-		@Override
-		public String getUsername() {
-			return this.user.getUsername();
-		}
+        @Override
+        public String getUsername() {
+            return this.user.getUsername();
+        }
 
-		@Override
-		public boolean isAccountNonExpired() {
-			return true;
-		}
+        @Override
+        public boolean isAccountNonExpired() {
+            return true;
+        }
 
-		@Override
-		public boolean isAccountNonLocked() {
-			return true;
-		}
+        @Override
+        public boolean isAccountNonLocked() {
+            return true;
+        }
 
-		@Override
-		public boolean isCredentialsNonExpired() {
-			return true;
-		}
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return true;
+        }
 
-		@Override
-		public boolean isEnabled() {
-			return true;
-		}
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
-	}
+    }
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
-				.map(JpaUserDetails::new).toList();
+        log.info("looking for " + username + '.');
+        var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
+                .map(JpaUserDetails::new).toList();
 
-		if (byUsername.size() != 1) {
-			throw new UsernameNotFoundException(
-					"couldn't find one and only one instance of the user '" + username + "' ");
-		}
+        if (byUsername.size() != 1) {
+            throw new UsernameNotFoundException(
+                    "couldn't find one and only one instance of the user '" + username + "' ");
+        }
 
-		return byUsername.get(0);
-	}
+        var result = byUsername.get(0);
+        log.info("found  " + result.getPassword());
+        return result;
+    }
 
 }

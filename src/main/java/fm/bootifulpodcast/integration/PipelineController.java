@@ -53,7 +53,7 @@ class PipelineController {
 
 	@GetMapping("/podcasts")
 	ResponseEntity<Collection<PodcastView>> all() {
-		var all = podcastViewService.from(this.podcastRepository.findAll());
+		var all = this.podcastViewService.from(this.podcastRepository.findAll());
 		return ResponseEntity.ok(all);
 	}
 
@@ -79,18 +79,13 @@ class PipelineController {
 				var audioUriForPodcast = service.buildMediaUriForPodcastById(podcast.getId()).toString();
 				var up = Map.of("media-url", audioUriForPodcast, "audio-url", audioUriForPodcast, "status",
 						this.audioProductionFinishedMessage);
-				for (var e : up.entrySet()) {
-					statusMap.put(e.getKey(), e.getValue());
-				}
+				statusMap.putAll(up);
 				log.info("updating status map for s3audiourl");
-
 			}
 
 			if (null != podcast.getPodbeanPhotoUri()) {
 				var up = Map.of("photo-url", podcast.getS3PhotoUri(), "status", this.podbeanUploadFinishedMessage);
-				for (var e : up.entrySet()) {
-					statusMap.put(e.getKey(), e.getValue());
-				}
+				statusMap.putAll(up);
 				log.info("updating status map for podbeanPhotoUri");
 			}
 
