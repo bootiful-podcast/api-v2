@@ -11,7 +11,7 @@ import fm.bootifulpodcast.podbean.EpisodeStatus;
 import fm.bootifulpodcast.podbean.EpisodeType;
 import fm.bootifulpodcast.podbean.PodbeanClient;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@Log4j2
+@Slf4j
 @Configuration
 class Step3PodbeanIntegrationConfiguration {
 

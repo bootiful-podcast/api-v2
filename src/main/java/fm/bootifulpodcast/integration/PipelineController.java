@@ -3,7 +3,7 @@ package fm.bootifulpodcast.integration;
 import fm.bootifulpodcast.integration.database.PodcastRepository;
 import fm.bootifulpodcast.integration.utils.CopyUtils;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,7 +17,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.*;
 
-@Log4j2
+@Slf4j
 @RestController
 class PipelineController {
 

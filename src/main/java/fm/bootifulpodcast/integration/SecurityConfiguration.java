@@ -3,7 +3,7 @@ package fm.bootifulpodcast.integration;
 import fm.bootifulpodcast.integration.database.User;
 import fm.bootifulpodcast.integration.database.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -93,7 +93,7 @@ class CorsConfig {
 
 }
 
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 class JdbcUserDetailsService implements UserDetailsService {
 

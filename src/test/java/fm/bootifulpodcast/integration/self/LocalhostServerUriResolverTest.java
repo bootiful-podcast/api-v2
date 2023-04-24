@@ -1,6 +1,6 @@
 package fm.bootifulpodcast.integration.self;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,7 +11,7 @@ import org.springframework.boot.web.server.WebServer;
 import java.net.InetAddress;
 import java.net.URI;
 
-@Log4j2
+@Slf4j
 class LocalhostServerUriResolverTest {
 
 	private final LocalhostServerUriResolver serverUriResolver = new LocalhostServerUriResolver();

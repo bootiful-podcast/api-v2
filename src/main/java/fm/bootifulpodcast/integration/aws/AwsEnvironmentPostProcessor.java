@@ -2,7 +2,7 @@ package fm.bootifulpodcast.integration.aws;
 
 import fm.bootifulpodcast.integration.utils.CopyUtils;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -19,7 +19,7 @@ import java.util.function.Function;
  * {@code $HOME/.aws/config} as keys in the Spring
  * {@link org.springframework.core.env.Environment}.
  */
-@Log4j2
+@Slf4j
 class AwsEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	@SneakyThrows

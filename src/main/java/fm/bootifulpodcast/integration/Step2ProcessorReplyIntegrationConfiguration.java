@@ -7,7 +7,7 @@ import fm.bootifulpodcast.integration.events.PodcastProcessedEvent;
 import fm.bootifulpodcast.integration.utils.JsonHelper;
 import fm.bootifulpodcast.integration.utils.PipelineUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.amqp.dsl.Amqp;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+
 import java.util.Map;
 
 /**
@@ -23,7 +24,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@Log4j2
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 class Step2ProcessorReplyIntegrationConfiguration {

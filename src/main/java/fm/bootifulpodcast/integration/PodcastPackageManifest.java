@@ -3,11 +3,11 @@ package fm.bootifulpodcast.integration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 @NoArgsConstructor
 public class PodcastPackageManifest {
 

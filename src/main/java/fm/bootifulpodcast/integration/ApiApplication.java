@@ -5,7 +5,7 @@ import fm.bootifulpodcast.integration.database.PodcastRepository;
 import fm.bootifulpodcast.integration.self.ServerUriResolver;
 import fm.bootifulpodcast.rabbitmq.RabbitMqHelper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
-@Log4j2
+@Slf4j
 @SpringBootApplication
 @EnableConfigurationProperties(PipelineProperties.class)
 @RequiredArgsConstructor

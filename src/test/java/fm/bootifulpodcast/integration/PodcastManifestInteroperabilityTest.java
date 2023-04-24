@@ -1,7 +1,7 @@
 package fm.bootifulpodcast.integration;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.w3c.dom.Document;
@@ -23,7 +23,7 @@ import java.util.Map;
  * JavaScript and I want to make sure that the parser on the server-side knows what to do
  * with the XML it's given from the client.
  */
-@Log4j2
+@Slf4j
 public class PodcastManifestInteroperabilityTest {
 
 	private File buildFileFromFileName(String fn) {

@@ -1,14 +1,14 @@
 package fm.bootifulpodcast.integration.self;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 
 import java.net.InetAddress;
 import java.net.URI;
 
-@Log4j2
+@Slf4j
 class LocalhostServerUriResolver extends AbstractServerUriResolver
 		implements ServerUriResolver, ApplicationListener<WebServerInitializedEvent> {
 

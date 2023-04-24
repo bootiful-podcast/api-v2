@@ -3,7 +3,7 @@ package fm.bootifulpodcast.integration.self;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.net.URI;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-@Log4j2
+@Slf4j
 class CloudFoundryServerUriResolver extends AbstractServerUriResolver implements ServerUriResolver {
 
 	private final URI uri;

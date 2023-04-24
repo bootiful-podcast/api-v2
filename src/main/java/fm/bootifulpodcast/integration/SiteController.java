@@ -10,7 +10,7 @@ import fm.bootifulpodcast.integration.events.SearchIndexInvalidatedEvent;
 import fm.bootifulpodcast.integration.utils.DateUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Provides endpoints designed to support the working of the site
  */
-@Log4j2
+@Slf4j
 @RestController
 @RequestMapping("/site")
 @RequiredArgsConstructor

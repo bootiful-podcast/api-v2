@@ -8,7 +8,7 @@ import fm.bootifulpodcast.integration.events.PodcastPublishedToPodbeanEvent;
 import fm.bootifulpodcast.integration.events.SearchIndexInvalidatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
 import org.jsoup.Jsoup;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 class SearchController {

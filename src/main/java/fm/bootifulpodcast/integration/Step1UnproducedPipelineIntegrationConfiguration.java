@@ -6,7 +6,7 @@ import fm.bootifulpodcast.integration.events.PodcastArtifactsUploadedToProcessor
 import fm.bootifulpodcast.integration.utils.CopyUtils;
 import fm.bootifulpodcast.integration.utils.JsonHelper;
 import fm.bootifulpodcast.integration.utils.UnzipUtils;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +44,7 @@ import static fm.bootifulpodcast.integration.Headers.*;
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@Log4j2
+@Slf4j
 @Configuration
 class Step1UnproducedPipelineIntegrationConfiguration {
 

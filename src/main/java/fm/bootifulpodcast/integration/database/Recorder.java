@@ -7,7 +7,7 @@ import fm.bootifulpodcast.integration.aws.AwsS3Service;
 import fm.bootifulpodcast.integration.events.*;
 import fm.bootifulpodcast.integration.utils.CopyUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
-@Log4j2
+@Slf4j
 @Component
 @RequiredArgsConstructor
 @Transactional

@@ -3,7 +3,7 @@ package fm.bootifulpodcast.integration.aws;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.net.URI;
 
-@Log4j2
+@Slf4j
 public class AwsS3Service {
 
 	private final String inputBucketName;

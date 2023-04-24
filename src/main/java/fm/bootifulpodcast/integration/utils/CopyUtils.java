@@ -1,14 +1,14 @@
 package fm.bootifulpodcast.integration.utils;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.*;
 
-@Log4j2
+@Slf4j
 public abstract class CopyUtils {
 
 	@SneakyThrows
