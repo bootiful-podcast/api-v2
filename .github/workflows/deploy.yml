@@ -69,7 +69,7 @@ jobs:
         uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: '${{ env.GKE_CLUSTER  }}'
-          location: '${{ env.GKE_ZONE }}'
+          location: '${{ env.GCLOUD_ZONE }}'
 
       - run: |
           gcloud config set project $GCLOUD_PROJECT 
