@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -60,29 +61,27 @@ class CorsConfig {
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
 							.anyRequest().permitAll() //
 					) //
-					.cors(cors -> cors.configurationSource(corsConfigurationSource()))//
+					.cors(Customizer.withDefaults())//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
 					.csrf(AbstractHttpConfigurer::disable);
 		}
 
-		@Bean
-		CorsConfigurationSource corsConfigurationSource() {
-			var methods = Stream
-					.of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.GET)//
-					.map(Enum::name)//
-					.collect(Collectors.toList());
-
-			var configuration = new CorsConfiguration();
-			configuration.setAllowCredentials(true);
-			configuration.setAllowedHeaders(List.of("*"));
-			configuration.setAllowedOrigins(List.of("*"));
-			configuration.setAllowedMethods(methods);
-
-			var source = new UrlBasedCorsConfigurationSource();
-			source.registerCorsConfiguration("/**", configuration);
-
-			return source;
-		}
+		/*
+		 * @Bean CorsConfigurationSource corsConfigurationSource() { var methods = Stream
+		 * .of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT,
+		 * HttpMethod.GET)// .map(Enum::name)// .collect(Collectors.toList());
+		 *
+		 * var configuration = new CorsConfiguration();
+		 * configuration.setAllowCredentials(true);
+		 * configuration.setAllowedHeaders(List.of("*"));
+		 * configuration.setAllowedOrigins(List.of("*"));
+		 * configuration.setAllowedMethods(methods);
+		 *
+		 * var source = new UrlBasedCorsConfigurationSource();
+		 * source.registerCorsConfiguration("/**", configuration);
+		 *
+		 * return source; }
+		 */
 
 	}
 
@@ -106,8 +105,9 @@ class CorsConfig {
 						.of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.GET)//
 						.map(Enum::name).toList();
 
-				registry.addMapping("/**").allowedMethods(methods.toArray(new String[0])).allowedOrigins("*",
-						"https://bootifulpodcast.fm", "http://localhost:8080");
+				registry.addMapping("/**")//
+						.allowedMethods(methods.toArray(new String[0]))//
+						.allowedOriginPatterns("*");
 			}
 		};
 	}
