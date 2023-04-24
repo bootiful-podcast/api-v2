@@ -37,7 +37,7 @@ echo "IMAGE_TAG=$IMAGE_TAG"
 
 
 docker rmi $(docker images -a -q )
-mvn -f ${ROOT_DIR}/../pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
+mvn -U -f ${ROOT_DIR}/../pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
 image_id=$(docker images -q $APP_NAME)
 docker tag "${image_id}" $IMAGE_NAME
 docker push $IMAGE_NAME
