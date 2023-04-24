@@ -27,7 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-//todo go back in history and restore the SecurityConfiguration that used to be here
+import java.util.stream.Stream;
+
+// todo go back in history and restore the SecurityConfiguration that used to be here
 // todo also go back into the pom.xml and restore the jwt-spring-boot-starter
 
 @Configuration
@@ -40,21 +42,17 @@ class CorsConfig {
 		protected void configure(HttpSecurity http) throws Exception {
 			http //
 					.authorizeRequests(ae -> ae //
-							/* Secures the podcast endpoints */
 							.mvcMatchers("/podcasts/search").authenticated() //
 							.mvcMatchers("/podcasts/index").authenticated() //
 							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
-							// podcasts/" + uid + "/profile-photo
 							.mvcMatchers("/podcasts/*/profile-photo").permitAll() //
 							.mvcMatchers("/podcasts/*/produced-audio").permitAll() //
 							.mvcMatchers("/podcasts").authenticated() //
-							/* Secures the Actuator endpoints */
 							.mvcMatchers("/actuator/health").permitAll() //
 							.mvcMatchers("/actuator/health/**").permitAll() //
 							.mvcMatchers("/site/podcasts").permitAll() //
 							.mvcMatchers("/admin/**").authenticated() //
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
-							/* Secures everything else */
 							.anyRequest().permitAll() //
 					) //
 					.cors(Customizer.withDefaults())//
@@ -66,13 +64,9 @@ class CorsConfig {
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
-
-		var methods = List//
-				.of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.GET)//
-				.stream()//
+		var methods = Stream.of(HttpMethod.POST, HttpMethod.OPTIONS, HttpMethod.DELETE, HttpMethod.PUT, HttpMethod.GET)//
 				.map(Enum::name)//
 				.collect(Collectors.toList());
-
 		var configuration = new CorsConfiguration();
 		configuration.setAllowCredentials(true);
 		configuration.setAllowedHeaders(List.of("*"));
@@ -145,7 +139,7 @@ class JdbcUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 		var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
-				.map(JpaUserDetails::new).collect(Collectors.toList());
+				.map(JpaUserDetails::new).toList();
 
 		if (byUsername.size() != 1) {
 			throw new UsernameNotFoundException(

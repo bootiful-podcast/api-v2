@@ -53,13 +53,10 @@ class SiteController {
 	@EventListener({ PodcastPublishedToPodbeanEvent.class, ApplicationReadyEvent.class,
 			SearchIndexInvalidatedEvent.class })
 	public void refresh() {
-
 		log.info("Rebuilding podcast listing in " + this.getClass().getName() + '.');
 		var dateFormat = DateUtils.date();
-
 		var podcastList = new ArrayList<Podcast>();
 		this.repository.findAll().forEach(podcastList::add);
-
 		var allPodcasts = podcastList//
 				.stream()//
 				.peek(pr -> this.mapOfRenderedMarkdown.put(pr.getUid(),
@@ -67,9 +64,7 @@ class SiteController {
 				.map(p -> new PodcastRecord(p, "episode-photos/" + p.getUid() + ".jpg", dateFormat.format(p.getDate()),
 						this.mapOfRenderedMarkdown.get(p.getUid())))
 				.collect(Collectors.toList());
-
 		this.json.set(this.buildJsonForAllPodcasts(allPodcasts));
-
 	}
 
 	private String printJsonString(JsonNode jsonNode) {

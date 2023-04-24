@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -24,17 +23,6 @@ public class ApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
-	}
-
-	// @Bean
-	InitializingBean initializingBean(Environment environment, PipelineProperties pipelineProperties) {
-		return () -> {
-			log.info("------------------------------");
-			log.info(pipelineProperties.toString());
-			log.info("------------------------------");
-			System.getenv().forEach((k, v) -> log.info(k + '=' + v));
-			log.info("------------------------------");
-		};
 	}
 
 	// todo remove this if rabbitmq-utilities is added back to the classpath
