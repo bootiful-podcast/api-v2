@@ -73,11 +73,7 @@ class CorsConfig {
 			configuration.setAllowedHeaders(List.of("*"));
 			configuration.setAllowedOrigins(List.of("*"));
 			configuration.setAllowedMethods(methods);
-
-			var source = new UrlBasedCorsConfigurationSource();
-			source.registerCorsConfiguration("/**", configuration);
-
-			return source;
+			return c -> configuration;
 		}
 
 	}
