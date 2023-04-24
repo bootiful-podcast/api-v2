@@ -60,7 +60,7 @@ class CorsConfig {
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
 							.anyRequest().permitAll() //
 					) //
-					.cors(Customizer.withDefaults())//
+					.cors(cors -> cors.configurationSource(corsConfigurationSource()))//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
 					.csrf(AbstractHttpConfigurer::disable);
 		}
