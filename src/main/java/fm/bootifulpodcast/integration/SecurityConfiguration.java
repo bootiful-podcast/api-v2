@@ -37,77 +37,77 @@ import java.util.List;
 @Slf4j
 class CorsConfig {
 
-    @Slf4j
-    @Configuration
-    public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	@Slf4j
+	@Configuration
+	public static class MyWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName());
-            http //
-                    .authorizeRequests(ae -> ae //
-                            .mvcMatchers("/podcasts/search").authenticated() //
-                            .mvcMatchers("/podcasts/index").authenticated() //
-                            .mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
-                            .mvcMatchers("/podcasts/*/profile-photo").permitAll() //
-                            .mvcMatchers("/podcasts/*/produced-audio").permitAll() //
-                            .mvcMatchers("/podcasts").authenticated() //
-                            .mvcMatchers("/actuator/health").permitAll() //
-                            .mvcMatchers("/actuator/health/**").permitAll() //
-                            .mvcMatchers("/site/podcasts").permitAll() //
-                            .mvcMatchers("/admin/**").authenticated() //
-                            .requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
-                            .anyRequest().permitAll() //
-                    ) //
-                    .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
-                    .cors(Customizer.withDefaults())//
-                    .csrf(AbstractHttpConfigurer::disable);
-        }
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName());
+			http //
+					.authorizeRequests(ae -> ae //
+							.mvcMatchers("/podcasts/search").authenticated() //
+							.mvcMatchers("/podcasts/index").authenticated() //
+							.mvcMatchers(HttpMethod.POST, "/podcasts/**").authenticated() //
+							.mvcMatchers("/podcasts/*/profile-photo").permitAll() //
+							.mvcMatchers("/podcasts/*/produced-audio").permitAll() //
+							.mvcMatchers("/podcasts").authenticated() //
+							.mvcMatchers("/actuator/health").permitAll() //
+							.mvcMatchers("/actuator/health/**").permitAll() //
+							.mvcMatchers("/site/podcasts").permitAll() //
+							.mvcMatchers("/admin/**").authenticated() //
+							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
+							.anyRequest().permitAll() //
+					) //
+					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
+					.cors(Customizer.withDefaults())//
+					.csrf(AbstractHttpConfigurer::disable);
+		}
 
-    }
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        var configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:8080", "https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm"));
-        configuration.setAllowedMethods(this.methods);
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(List.of("Authorization", "Requestor-Type"));
-        configuration.setExposedHeaders(List.of("X-Get-Header"));
-        configuration.setMaxAge(3600L);
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		var configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(
+				List.of("http://localhost:8080", "https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm"));
+		configuration.setAllowedMethods(this.methods);
+		configuration.setAllowCredentials(true);
+		configuration.setAllowedHeaders(List.of("Authorization", "Requestor-Type"));
+		configuration.setExposedHeaders(List.of("X-Get-Header"));
+		configuration.setMaxAge(3600L);
+		var source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
-    private final List<String> methods = List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD");
+	private final List<String> methods = List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD");
 
-    @Bean
-    UserDetailsService jdbcUserDetailsService(UserRepository repository) {
-        return new JdbcUserDetailsService(repository);
-    }
+	@Bean
+	UserDetailsService jdbcUserDetailsService(UserRepository repository) {
+		return new JdbcUserDetailsService(repository);
+	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
 
-    @Bean
-    WebMvcConfigurer corsConfigurer() {
+	@Bean
+	WebMvcConfigurer corsConfigurer() {
 
-        return new WebMvcConfigurer() {
+		return new WebMvcConfigurer() {
 
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                log.info("enabling global CORS supports");
-                registry.addMapping("/**")//
-                        .allowedMethods(methods.toArray(new String[0]))//
-                        .allowedOriginPatterns("*")
-                        .allowedOrigins("https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm");
-            }
-        };
-    }
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				log.info("enabling global CORS supports");
+				registry.addMapping("/**")//
+						.allowedMethods(methods.toArray(new String[0]))//
+						.allowedOriginPatterns("*")
+						.allowedOrigins("https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm");
+			}
+		};
+	}
 
 }
 
@@ -115,65 +115,65 @@ class CorsConfig {
 @RequiredArgsConstructor
 class JdbcUserDetailsService implements UserDetailsService {
 
-    @RequiredArgsConstructor
-    private static class JpaUserDetails implements UserDetails {
+	@RequiredArgsConstructor
+	private static class JpaUserDetails implements UserDetails {
 
-        private final User user;
+		private final User user;
 
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            return Collections.singleton(new SimpleGrantedAuthority("USER"));
-        }
+		@Override
+		public Collection<? extends GrantedAuthority> getAuthorities() {
+			return Collections.singleton(new SimpleGrantedAuthority("USER"));
+		}
 
-        @Override
-        public String getPassword() {
-            return this.user.getPassword();
-        }
+		@Override
+		public String getPassword() {
+			return this.user.getPassword();
+		}
 
-        @Override
-        public String getUsername() {
-            return this.user.getUsername();
-        }
+		@Override
+		public String getUsername() {
+			return this.user.getUsername();
+		}
 
-        @Override
-        public boolean isAccountNonExpired() {
-            return true;
-        }
+		@Override
+		public boolean isAccountNonExpired() {
+			return true;
+		}
 
-        @Override
-        public boolean isAccountNonLocked() {
-            return true;
-        }
+		@Override
+		public boolean isAccountNonLocked() {
+			return true;
+		}
 
-        @Override
-        public boolean isCredentialsNonExpired() {
-            return true;
-        }
+		@Override
+		public boolean isCredentialsNonExpired() {
+			return true;
+		}
 
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
+		@Override
+		public boolean isEnabled() {
+			return true;
+		}
 
-    }
+	}
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        log.info("looking for " + username + '.');
-        var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
-                .map(JpaUserDetails::new).toList();
+		log.info("looking for " + username + '.');
+		var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
+				.map(JpaUserDetails::new).toList();
 
-        if (byUsername.size() != 1) {
-            throw new UsernameNotFoundException(
-                    "couldn't find one and only one instance of the user '" + username + "' ");
-        }
+		if (byUsername.size() != 1) {
+			throw new UsernameNotFoundException(
+					"couldn't find one and only one instance of the user '" + username + "' ");
+		}
 
-        var result = byUsername.get(0);
-        log.info("found  " + result.getPassword());
-        return result;
-    }
+		var result = byUsername.get(0);
+		log.info("found  " + result.getPassword());
+		return result;
+	}
 
 }
