@@ -16,9 +16,6 @@
         
         <lucene.version>8.6.2</lucene.version>
         <jsoup.version>1.13.1</jsoup.version>
-        <artifactory-maven-plugin.version>
-            2.4.0
-        </artifactory-maven-plugin.version>
         <aws-java-sdk.version>1.11.567</aws-java-sdk.version>
         <java.version>17</java.version>
     </properties>
