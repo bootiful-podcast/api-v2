@@ -35,10 +35,10 @@ public class PodcastManifestInteroperabilityTest {
 	public void manifest() throws Exception {
 
 		var xmlFromJavaScript = ("    <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><podcast title=\"the Title\" uid=\"13232-224232-4353-21231\">\n"
-								 + "    <interview src=\"interview.mp3\"/>\n" + "    <introduction src=\"intro.mp3\"/>\n"
-								 + "    <photo src=\"photo.jpg\"/>\n"
-								 + "    <description>This is the potentially very long multine XML-riddled and HTML-riddled description of the show. &lt;em&gt;I &lt;B&gt;love&lt;/B&gt;&lt;/em&gt; this show!</description>\n"
-								 + "    </podcast>").trim();
+				+ "    <interview src=\"interview.mp3\"/>\n" + "    <introduction src=\"intro.mp3\"/>\n"
+				+ "    <photo src=\"photo.jpg\"/>\n"
+				+ "    <description>This is the potentially very long multine XML-riddled and HTML-riddled description of the show. &lt;em&gt;I &lt;B&gt;love&lt;/B&gt;&lt;/em&gt; this show!</description>\n"
+				+ "    </podcast>").trim();
 
 		var xmlFromJava = buildXmlManifestForPackage("the Title",
 				"This is the potentially very long multine XML-riddled and HTML-riddled description of the show. <em>I <B>love</B></em> this show!"
