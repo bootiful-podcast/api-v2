@@ -1,5 +1,8 @@
 package fm.bootifulpodcast.integration;
 
+/**
+ * Describes the various asset types in the system
+ */
 public class AssetTypes {
 
 	public static final String TYPE_INTRODUCTION_AUDIO = "introduction";
