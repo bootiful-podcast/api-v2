@@ -8,7 +8,6 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,15 +19,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
 // todo go back in history and restore the SecurityConfiguration that used to be here
@@ -91,7 +86,8 @@ class CorsConfig {
 
 				registry.addMapping("/**")//
 						.allowedMethods(methods.toArray(new String[0]))//
-						.allowedOriginPatterns("*");
+						.allowedOriginPatterns("*")
+						.allowedOrigins("https://studio.bootifulpodcast.fm", "https://bootifulpodcast.fm");
 			}
 		};
 	}
