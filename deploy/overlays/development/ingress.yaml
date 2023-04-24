@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -7,11 +7,12 @@ metadata:
 #    kubernetes.io/ingress.global-static-ip-name: "development-ip"
     kubernetes.io/ingress.global-static-ip-name: "api-development-ip"
   name: api-ingress
+
+
 spec:
-  rules:
-    - host: api.development.bootifulpodcast.fm
-      http:
-        paths:
-          - backend:
-              serviceName: api
-              servicePort: 80
+  defaultBackend:
+    service:
+      name: api
+      port:
+        number: 80
+
