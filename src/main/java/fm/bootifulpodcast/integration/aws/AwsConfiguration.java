@@ -6,15 +6,30 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
 import fm.bootifulpodcast.integration.PipelineProperties;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
 class AwsConfiguration {
+
+	@SneakyThrows
+	private static void debug(Bucket bucket) {
+		log.info("AWS S3 Bucket named {} created on {} by {}", bucket.getName(), bucket.getCreationDate(),
+				bucket.getOwner().getDisplayName());
+	}
+
+	@Bean
+	ApplicationListener<ApplicationReadyEvent> awsInitializer(AmazonS3 s3) {
+		return event -> s3.listBuckets().forEach(AwsConfiguration::debug);
+	}
 
 	@Bean
 	AwsS3Service awsS3Service(PipelineProperties properties, AmazonS3 s3) {

@@ -22,6 +22,19 @@ import java.util.function.Function;
 @Slf4j
 class AwsEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
+	@Override
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+
+		var awsRoot = new File(System.getProperty("user.home"), ".aws");
+		readFileIntoEnvironment(new File(awsRoot, "credentials"), "aws-credentials", environment, (key) -> key);
+		readFileIntoEnvironment(new File(awsRoot, "config"), "aws-config", environment, k -> {
+			if (k.equalsIgnoreCase("region")) {
+				return "aws_region";
+			}
+			return k;
+		});
+	}
+
 	@SneakyThrows
 	private static void readFileIntoEnvironment(File file, String psPrefix, ConfigurableEnvironment environment,
 			Function<String, String> mapper) {
@@ -40,19 +53,6 @@ class AwsEnvironmentPostProcessor implements EnvironmentPostProcessor {
 			var mapPropertySource = new MapPropertySource(psPrefix, map);
 			environment.getPropertySources().addLast(mapPropertySource);
 		}
-	}
-
-	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-
-		var awsRoot = new File(System.getProperty("user.home"), ".aws");
-		readFileIntoEnvironment(new File(awsRoot, "credentials"), "aws-credentials", environment, (key) -> key);
-		readFileIntoEnvironment(new File(awsRoot, "config"), "aws-config", environment, k -> {
-			if (k.equalsIgnoreCase("region")) {
-				return "aws_region";
-			}
-			return k;
-		});
 	}
 
 }
