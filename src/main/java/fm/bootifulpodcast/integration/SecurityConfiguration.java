@@ -60,21 +60,21 @@ class CorsConfig {
 							.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()//
 							.anyRequest().permitAll() //
 					) //
-					.cors(cors -> cors.configurationSource(corsConfigurationSource()))//
+					// .cors(cors ->
+					// cors.configurationSource(corsConfigurationSource()))//
+					.cors(Customizer.withDefaults())//
 					.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)//
 					.csrf(AbstractHttpConfigurer::disable);
 		}
 
-		@Bean
-		CorsConfigurationSource corsConfigurationSource() {
-			var methods = Stream.of(HttpMethod.values()).map(Enum::name).toList();
-			var configuration = new CorsConfiguration();
-			configuration.setAllowCredentials(true);
-			configuration.setAllowedHeaders(List.of("*"));
-			configuration.setAllowedOrigins(List.of("*"));
-			configuration.setAllowedMethods(methods);
-			return c -> configuration;
-		}
+		/*
+		 * @Bean CorsConfigurationSource corsConfigurationSource() { var methods =
+		 * Stream.of(HttpMethod.values()).map(Enum::name).toList(); var configuration =
+		 * new CorsConfiguration(); configuration.setAllowCredentials(true);
+		 * configuration.setAllowedHeaders(List.of("*"));
+		 * configuration.setAllowedOrigins(List.of("*"));
+		 * configuration.setAllowedMethods(methods); return c -> configuration; }
+		 */
 
 	}
 
