@@ -19,9 +19,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 // todo also go back into the pom.xml and restore the jwt-spring-boot-starter
 
 @Configuration
+@Slf4j
 class CorsConfig {
 
 	@Slf4j
@@ -41,11 +43,7 @@ class CorsConfig {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-
-			log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName() + '.' + " [" +
-
-					"]");
-
+			log.info("launching " + MyWebSecurityConfigurerAdapter.class.getName());
 			http //
 					.authorizeRequests(ae -> ae //
 							.mvcMatchers("/podcasts/search").authenticated() //
@@ -90,6 +88,17 @@ class CorsConfig {
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+
+	@Bean
+	WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				log.info("enabling global CORS supports");
+				registry.addMapping("/**").allowedOrigins("https://bootifulpodcast.fm", "http://localhost:8080");
+			}
+		};
 	}
 
 }
