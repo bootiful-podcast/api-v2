@@ -163,7 +163,7 @@ class JdbcUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
 		log.info("looking for " + username + '.');
-		var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").toLowerCase()).stream()
+		var byUsername = this.userRepository.findByUsernameIgnoreCase((username + "").trim().toLowerCase()).stream()
 				.map(JpaUserDetails::new).toList();
 
 		if (byUsername.size() != 1) {
@@ -172,7 +172,7 @@ class JdbcUserDetailsService implements UserDetailsService {
 		}
 
 		var result = byUsername.get(0);
-		log.info("found  " + result.getPassword());
+		log.info("found  " + result.getUsername() + " with password [" + result.getPassword() + "]");
 		return result;
 	}
 
