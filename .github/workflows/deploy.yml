@@ -47,7 +47,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-
       - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
@@ -55,13 +54,15 @@ jobs:
 
       - uses: 'google-github-actions/auth@v0'
         with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          credentials_json: '${{ secrets.GCLOUD_SA_KEY }}'
+
 
       - id: 'get-credentials'
         uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: '${{ env.GKE_CLUSTER  }}'
           location: '${{ env.GCLOUD_ZONE }}'
+
 
       - run: |
           gcloud config set project $GCLOUD_PROJECT 
