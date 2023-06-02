@@ -15,22 +15,34 @@ spec:
         app: api
     spec:
       containers:
+
+
         - envFrom:
+
             - secretRef:
                 name: api-secrets
+
           image: gcr.io/pgtm-jlong/api
           imagePullPolicy: Always
           name: api
+
           readinessProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 120
             httpGet:
               port: 8080
               path: /actuator/health/readiness
+
           livenessProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 120
             httpGet:
               port: 8080
               path: /actuator/health/liveness
+
           ports:
             - containerPort: 8080
+
           resources:
             limits:
               memory: "2Gi"
