@@ -56,13 +56,11 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCLOUD_SA_KEY }}'
 
-
       - id: 'get-credentials'
         uses: 'google-github-actions/get-gke-credentials@v1'
         with:
           cluster_name: '${{ env.GKE_CLUSTER  }}'
           location: '${{ env.GCLOUD_ZONE }}'
-
 
       - run: |
           gcloud config set project $GCLOUD_PROJECT 
