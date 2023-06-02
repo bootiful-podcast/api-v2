@@ -4,18 +4,8 @@ metadata:
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "true"
     networking.gke.io/managed-certificates: "api-certificate"
-    kubernetes.io/ingress.global-static-ip-name: "api-production-ip"
+    kubernetes.io/ingress.global-static-ip-name: "bootiful-podcast-api-ip"
   name: api-ingress
-# spec:
-#   rules:
-#     - host: api.bootifulpodcast.fm
-#       http:
-#         paths:
-#           - backend:
-#               serviceName: api
-#               servicePort: 80
-
-
 spec:
   defaultBackend:
     service:

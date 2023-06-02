@@ -2,54 +2,36 @@
 set -e
 set -o pipefail
 
-export PROJECT_ID=${GCLOUD_PROJECT}
 
 APP_NAME=api
-
-#RMQ_USER=$BP_RABBITMQ_MANAGEMENT_USERNAME
-#RMQ_PW=$BP_RABBITMQ_MANAGEMENT_PASSWORD
-#PSQL_USER=$BP_POSTGRES_USERNAME
-#PSQL_PW=$BP_POSTGRES_PASSWORD
-#RMQ_USER=$BP_RABBITMQ_MANAGEMENT_USERNAME
-#RMQ_PW=$BP_RABBITMQ_MANAGEMENT_PASSWORD
-#PSQL_HOST=$BP_POSTGRES_HOST
-#PSQL_USER=$BP_POSTGRES_USERNAME
-#PSQL_PW=$BP_POSTGRES_PASSWORD
-#PSQL_DB=$BP_POSTGRES_DB
-
-API_YAML=${ROOT_DIR}/deploy/bp-api.yaml
-API_SERVICE_YAML=${ROOT_DIR}/deploy/bp-api-service.yaml
 SECRETS=${APP_NAME}-secrets
+SECRETS_FN=${APP_NAME}-secrets
+IMAGE_NAME=gcr.io/${GCLOUD_PROJECT}/${APP_NAME}
+RESERVED_IP_NAME=bootiful-podcast-${APP_NAME}-ip
 
-ROOT_DIR=$(cd $(dirname $0) && pwd)
-BP_MODE_LOWERCASE=${BP_MODE_LOWERCASE:-development}
-OD=${ROOT_DIR}/overlays/${BP_MODE_LOWERCASE}
-SECRETS_FN=${ROOT_DIR}/overlays/development/${APP_NAME}-secrets.env
-
-export IMAGE_TAG="${BP_MODE_LOWERCASE}${GITHUB_SHA:-}"
-export GCR_IMAGE_NAME=gcr.io/${PROJECT_ID}/${APP_NAME}
-export IMAGE_NAME=${GCR_IMAGE_NAME}:${IMAGE_TAG}
-echo "OD=$OD"
 echo "BP_MODE_LOWERCASE=$BP_MODE_LOWERCASE"
-echo "GCR_IMAGE_NAME=$GCR_IMAGE_NAME"
 echo "IMAGE_NAME=$IMAGE_NAME"
 echo "IMAGE_TAG=$IMAGE_TAG"
+echo "APP_NAME=$APP_NAME"
+
+gcloud compute addresses list --format json | jq '.[].name' -r | grep $RESERVED_IP_NAME || gcloud compute addresses create $RESERVED_IP_NAME --global
 
 
-docker rmi $(docker images -a -q )
-mvn -U -f ${ROOT_DIR}/../pom.xml -DskipTests=true clean spring-javaformat:apply spring-boot:build-image
-image_id=$(docker images -q $APP_NAME)
-docker tag "${image_id}" $IMAGE_NAME
+docker images -q $IMAGE_NAME | while read  l ; do docker rmi $l -f ; done
+
+
+./mvnw -DskipTests=true  clean package spring-boot:build-image -Dspring-boot.build-image.imageName=$IMAGE_NAME
+
+
+echo "pushing ${IMAGE_ID}  "
 docker push $IMAGE_NAME
-echo "pushing ${image_id} to $IMAGE_NAME "
-echo "tagging ${GCR_IMAGE_NAME}"
 
-
-export RESERVED_IP_NAME=${APP_NAME}-${BP_MODE_LOWERCASE}-ip
-gcloud compute addresses list --format json | jq '.[].name' -r | grep $RESERVED_IP_NAME ||
-  gcloud compute addresses create $RESERVED_IP_NAME --global
+rm -rf $SECRETS_FN
 touch $SECRETS_FN
 echo writing to "$SECRETS_FN "
+
+
+
 cat <<EOF >${SECRETS_FN}
 BP_MODE=${BP_MODE_LOWERCASE}
 SPRING_RABBITMQ_USERNAME=${BP_RABBITMQ_MANAGEMENT_USERNAME}
@@ -71,8 +53,11 @@ PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME=${PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME}
 PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME=${PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME}
 EOF
 
-cd $OD
-kustomize edit set image $GCR_IMAGE_NAME=$IMAGE_NAME
-kustomize build ${OD} | kubectl apply -f -
 
-rm $SECRETS_FN
+echo "SECRETS==========="
+echo $SECRETS_FN
+kubectl delete secrets $SECRETS || echo "no secrets to delete."
+kubectl create secret generic $SECRETS --from-env-file $SECRETS_FN
+kubectl delete -f $ROOT_DIR/deploy/k8s/deployment.yaml || echo "couldn't delete the deployment as there was nothing deployed."
+kubectl apply -f $ROOT_DIR/deploy/k8s
+

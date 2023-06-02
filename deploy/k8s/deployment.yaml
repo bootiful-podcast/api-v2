@@ -18,7 +18,7 @@ spec:
         - envFrom:
             - secretRef:
                 name: api-secrets
-          image: gcr.io/bootiful/api
+          image: gcr.io/pgtm-jlong/api
           imagePullPolicy: Always
           name: api
           readinessProbe:
