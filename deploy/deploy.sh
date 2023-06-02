@@ -19,9 +19,7 @@ gcloud compute addresses list --format json | jq '.[].name' -r | grep $RESERVED_
 
 docker images -q $IMAGE_NAME | while read  l ; do docker rmi $l -f ; done
 
-
-./mvnw -DskipTests=true  clean package spring-boot:build-image -Dspring-boot.build-image.imageName=$IMAGE_NAME
-
+./mvnw -DskipTests=true spring-boot:build-image -Dspring-boot.build-image.imageName=$IMAGE_NAME
 
 echo "pushing ${IMAGE_ID}  "
 docker push $IMAGE_NAME
@@ -29,8 +27,6 @@ docker push $IMAGE_NAME
 rm -rf $SECRETS_FN
 touch $SECRETS_FN
 echo writing to "$SECRETS_FN "
-
-
 
 cat <<EOF >${SECRETS_FN}
 BP_MODE=${BP_MODE_LOWERCASE}
@@ -53,11 +49,10 @@ PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME=${PODCAST_PIPELINE_S3_INPUT_BUCKET_NAME}
 PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME=${PODCAST_PIPELINE_S3_OUTPUT_BUCKET_NAME}
 EOF
 
-
 echo "SECRETS==========="
 echo $SECRETS_FN
 kubectl delete secrets $SECRETS || echo "no secrets to delete."
 kubectl create secret generic $SECRETS --from-env-file $SECRETS_FN
-kubectl delete -f $ROOT_DIR/deploy/k8s/deployment.yaml || echo "couldn't delete the deployment as there was nothing deployed."
-kubectl apply -f $ROOT_DIR/deploy/k8s
+kubectl delete -f deploy/k8s/deployment.yaml || echo "couldn't delete the deployment as there was nothing deployed."
+kubectl apply -f deploy/k8s
 
