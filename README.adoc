@@ -16,7 +16,6 @@ from the http://github.com/bootiful-podcast/studio-v2[studio]. Here's the basic 
 * At this point, the episode should be visible to people in their podcasting clients on their mobile devices worldwide and the new episode should be live on http://bootifulpodcast.fm[the site].
 * once the podcast has been published, this API sends notifications alerting the user
 
-
 == Technical
 
 This module uses Spring Boot, Spring Integration, Spring Security, the AWS API, the Sendgrid API, and the Podbean API (via https://github.com/bootiful-podcast/podbean-client[the Podbean client]).
