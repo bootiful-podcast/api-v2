@@ -3,7 +3,6 @@
 image::https://github.com/bootiful-podcast/api-v2/workflows/Deploy/badge.svg[Status]
 
 
-
 == Description
 
 This service is the clearing house for new podcast packages uploaded
