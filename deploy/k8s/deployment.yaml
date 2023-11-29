@@ -22,7 +22,7 @@ spec:
             - secretRef:
                 name: api-secrets
 
-          image: gcr.io/pgtm-jlong/api
+          image: gcr.io/joshlong/api
           imagePullPolicy: Always
           name: api
 
